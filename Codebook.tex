@@ -1,0 +1,52 @@
+\documentclass[a4paper,10pt,oneside]{article}
+
+\input{Codebook-setup}
+
+\begin{document}
+
+  % Debug Info
+  % \the\paperwidth  \par
+  % \the\paperheight  \par
+  % \the\geometrylen{layoutwidth}  \par
+  % \the\geometrylen{layoutheight}  \par
+  % \the\textwidth  \par
+  % \the\textheight  \par
+  % \the\voffset  \par
+  % \the\hoffset  \par
+
+  \begin{multicols}{\NumberOfColumn}
+    \pagestyle{fancy}
+
+    \fancyfoot{}
+    \fancyhead[L]{\UniversityName{} \TeamName}
+    \fancyhead[R]{\thepage}
+
+    \renewcommand{\headrulewidth}{0.4pt}
+    \renewcommand{\contentsname}{Contents}
+
+    \scriptsize
+    \input{list.tex}
+    \clearpage
+  \end{multicols}
+  \newpage
+  \begin{multicols}{\NumberOfColumn}
+    \enlargethispage*{\baselineskip}
+    % \begin{center}
+    %   \Huge\textsc{ACM ICPC Team Reference - \TeamName}
+    %   \vspace{0.35cm}
+    % \end{center}
+    \tableofcontents
+  \end{multicols}
+  \clearpage
+
+  % 以下是測機用範本，不需要可以刪掉
+  % \begin{multicols}{\NumberOfColumn}
+  %   \begin{center}
+  %     \Huge\textsc{ACM ICPC Judge Test - \TeamName}
+  %     \vspace{0.35cm}
+  %   \end{center}
+  %   \scriptsize
+  %   \input{./judge-test/cpp-test.tex}
+  % \end{multicols}
+
+\end{document}
