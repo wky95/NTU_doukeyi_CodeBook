@@ -1,3 +1,5 @@
+const int EPS = 1e-6;
+
 typedef int pt;
 struct point{
     pt x, y;
@@ -19,9 +21,11 @@ struct point{
     double operator * (point a){return x*a.x+y*a.y;};
     double operator ^ (point a){return x*a.y-y*a.x;};
 
-    // 極角排序（順時鐘）
-    bool operator < (const point &a) const {return (x*a.y<a.x*y);}
+    // bool operator < (const point &a) const {return (x*a.y<a.x*y);} // 極角排序（順時鐘）
+    bool operator < (const point &a) const {return x==a.x ? y<a.y : x<a.x;}
+    bool operator == (const point &a) const {return x==a.x && y==a.y;}
 
+    double dis(point a){return sqrtl(abs(x-a.x)*abs(x-a.x)+abs(y-a.y)*abs(y-a.y));}
 };
 
 // 判斷向量正負：1=正數, 0=0, -1=負數
