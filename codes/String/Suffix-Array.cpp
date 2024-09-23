@@ -3,9 +3,9 @@ s = temmie
 pos = 6 5 1 4 3 2 0 
 rnk = 6 2 5 4 3 1 0 
 
+注意，pos 跟 rnk 的大小為 s.size()+1
 pos:
 (空字串) -> e -> emmie -> ie -> mie -> mmie -> temmie
-
 rnk[i] = i 在 pos 的哪個位置（第幾小的陣列）
 */
 
@@ -37,7 +37,7 @@ void Radix_Sort(vector<array<int, 3>> &v){
 }
 
 void Build_SA(string s){
-    s += '$';
+    s += (char)(0);
     int n = s.size();
     rnk.resize(n);
     pos.resize(n);
