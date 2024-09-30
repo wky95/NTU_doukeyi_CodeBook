@@ -4,18 +4,11 @@
 using namespace std;
 
 #ifdef LOCAL
-void debug(){cerr << "\n";}
-template<class T, class ... U>
-void debug(T a, U ... b){cerr << a << " ", debug(b...);}
-template<class T> void pary(T l, T r){
-    while (l!=r) cerr << *l << " ", l++;
-    cerr << "\n";
-}
+#define cout cout << "\033[0;32m" 
+#define cerr cerr << "\033[0;31m" 
 #else
 #pragma GCC optimize("O3,unroll-loops")
 #pragma GCC target("avx,avx2,sse,sse2,sse3,sse4,popcnt")
-#define debug(...) void()
-#define pary(...) void()
 #endif
 
 const int MAX_N = 5e5+10;
