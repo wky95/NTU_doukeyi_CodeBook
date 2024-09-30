@@ -4,6 +4,7 @@ int rnd(int l, int r){
 }
 
 // O(n^{1/4}) 回傳 1 或自己的因數、記得先判斷 n 是不是質數（用 Miller-Rabin）
+// c1670c
 int Pollard_Rho(int n){
     int s = 0, t = 0;
     int c = rnd(1, n-1);

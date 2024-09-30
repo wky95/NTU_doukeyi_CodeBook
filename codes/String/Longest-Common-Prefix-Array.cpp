@@ -9,6 +9,7 @@ lcp[i] = 第 i 小的後綴跟 i-1 小的後綴的 lcp（based-1）
 vector<int> pos, rnk;
 vector<int> lcp;
 
+// 2c4535
 void Build_LCP(string s){
     int n = s.size();
     s += '$';

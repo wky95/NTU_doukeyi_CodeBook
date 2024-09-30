@@ -6,7 +6,11 @@
 SCC_compress G(n): 宣告一個有 n 個點的圖
 .add_edge(u, v): 加上一條邊 u -> v
 .compress: O(n log n) 計算 G3、SCC、SCC_id 的資訊，並把縮點後的結果存在 result 裡
+
+SCC[i] = 某個 SCC 中的所有點
+SCC_id[i] = 第 i 個點在第幾個 SCC
 */
+// c8b146
 struct SCC_compress{
     int n = 0, m = 0;
     vector<vector<int>> G, inv_G, result;
@@ -14,10 +18,10 @@ struct SCC_compress{
     vector<bool> vis;
     vector<int> order;
 
-    vector<vector<int>> SCC; // SCC[i] = 某個 SCC 中的所有點
-    vector<int> SCC_id;      // SCC_id[i] = 第 i 個點在第幾個 SCC
+    vector<vector<int>> SCC;
+    vector<int> SCC_id;
 
-    SCC_compress(int _n){ // 點的數量
+    SCC_compress(int _n){
         n = _n;
         G.resize(n);
         inv_G.resize(n);
@@ -58,7 +62,6 @@ struct SCC_compress{
     }
 
     void compress(){
-        // 找反圖順序
         fill(vis.begin(), vis.end(), 0);
         for (int i=0 ; i<n ; i++){
             if (vis[i]==0){
@@ -66,7 +69,6 @@ struct SCC_compress{
             }
         }
 
-        // 找到 SCC
         fill(vis.begin(), vis.end(), 0);
         reverse(order.begin(), order.end());
         for (int i=0 ; i<n ; i++){
@@ -76,7 +78,6 @@ struct SCC_compress{
             }
         }
 
-        // 縮點做 DAG
         for (int i=0 ; i<m ; i++){
             if (SCC_id[edges[i].first]!=SCC_id[edges[i].second]){
                 result[SCC_id[edges[i].first]].push_back(SCC_id[edges[i].second]);

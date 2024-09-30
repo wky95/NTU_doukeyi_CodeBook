@@ -1,4 +1,5 @@
 // fast IO
+// 6f8879
 inline char readchar(){
     static char buffer[BUFSIZ], * now = buffer + BUFSIZ, * end = buffer + BUFSIZ;
     if (now == end)

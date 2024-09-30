@@ -4,11 +4,13 @@
 using namespace std;
 
 #ifdef LOCAL
-#define cout cout << "\033[0;32m" 
-#define cerr cerr << "\033[0;31m" 
+#define cout cout << "\033[0;32m"
+#define cerr cerr << "\033[0;31m"
+#define endl "\n" << "\033[0m"
 #else
 #pragma GCC optimize("O3,unroll-loops")
 #pragma GCC target("avx,avx2,sse,sse2,sse3,sse4,popcnt")
+#define endl "\n"
 #endif
 
 const int MAX_N = 5e5+10;

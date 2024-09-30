@@ -7,6 +7,7 @@ PolyMul(a, b) 回傳多項式乘法的結果（c_k = \sum_{i+j} a_i+b_j mod MOD�
 const int MOD = 998244353;
 typedef complex<double> cd;
 
+// b9c90a
 void FFT(vector<cd> &a) {
     int n = a.size(), L = 31-__builtin_clz(n);
     vector<complex<long double>> R(2, 1);
@@ -41,6 +42,7 @@ void FFT(vector<cd> &a) {
     return;
 }
 
+// d3c65e
 vector<int> PolyMul(vector<int> a, vector<int> b){
     if (a.empty() || b.empty()) return {};
 

@@ -11,6 +11,7 @@ rnk[i] = i 在 pos 的哪個位置（第幾小的陣列）
 
 vector<int> pos, rnk;
 
+// 51f72a
 void Radix_Sort(vector<array<int, 3>> &v){
     int n = v.size();
     
@@ -36,6 +37,7 @@ void Radix_Sort(vector<array<int, 3>> &v){
     return;
 }
 
+// a4b26a
 void Build_SA(string s){
     s += (char)(0);
     int n = s.size();
