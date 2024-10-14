@@ -28,6 +28,7 @@
 \newcommand{\NumberOfColumn}{3} % 每頁有幾欄
 \newcommand{\UniversityName}{} % 學校名稱
 \newcommand{\TeamName}{RedCapeFlyingCat} % 隊名
+\newcommand{\Version}{1.0} % 版本號
 
 \newcommand{\includecpp}[2]{ % 支援 C++ (.cpp)
   \subsection{#1}
@@ -42,6 +43,11 @@
 \newcommand{\includetex}[2]{ % 支援 Latex (.tex)
   \subsection{#1}
     \input{#2}
+}
+
+\newcommand{\includevim}[2]{ % 支援 Vim (.vimrc)
+  \subsection{#1}
+    \lstinputlisting[language=vimrc]{#2}
 }
 
 % for debug

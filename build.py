@@ -10,7 +10,8 @@ splitter = '\\' if sys.platform == "win32" else '/'
 RequireOptionDict = {
     ".cpp": "includecpp",
     ".py": "includepy",
-    ".tex": "includetex"
+    ".tex": "includetex",
+    ".vimrc": "includevim",
 }
 
 
