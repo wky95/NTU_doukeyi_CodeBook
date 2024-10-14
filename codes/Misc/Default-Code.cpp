@@ -16,9 +16,6 @@ using namespace std;
 const int MAX_N = 5e5+10;
 const int INF = 2e18;
 
-int n, tmp;
-vector<int> v;
-
 void solve1(){
 
     return;
