@@ -1,8 +1,8 @@
 // O(1)
 typedef Uint unsigned long long
 Uint modmul(Uint a, Uint b, Uint m) {
-	int ret = a*b - m*(Uint)(1.L/m*a*b);
-	return ret + m*(ret < 0) - m*(ret>=(int)m);
+    int ret = a*b - m*(Uint)(1.L/m*a*b);
+    return ret + m*(ret < 0) - m*(ret>=(int)m);
 }
 
 int qp(int b, int p, int m){

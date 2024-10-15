@@ -13,9 +13,9 @@ struct SegmentTree{
  
     vector<node> arr;
 
-	SegmentTree(int n){
-		arr.resize(n<<2);
-	}
+    SegmentTree(int n){
+        arr.resize(n<<2);
+    }
  
     node pull(node A, node B){
         node C;
@@ -24,7 +24,7 @@ struct SegmentTree{
         return C;
     }
  
- 	// cce0c8
+     // cce0c8
     void push(int idx, int ll, int rr){
         if (arr[idx].set_tag!=0){
             arr[idx].sum = (rr-ll)*arr[idx].set_tag;

@@ -4,7 +4,7 @@
 */
 const int MAX_POS = 1e9+5; // [記得修改] 座標的最大值
 int in_polygon(vector<point> &v, point a){
-	int c = v.size();
+    int c = v.size();
     v.push_back(v[0]); // 已經用好循環了
     point b = {MAX_POS, a.y+1};
     int cnt = 0;

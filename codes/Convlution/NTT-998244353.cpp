@@ -9,13 +9,13 @@ void NTT(vector<int> &a) {
     vector<int> rt(2, 1);
     for (int k=2, s=2 ; k<n ; k*=2, s++){
         rt.resize(n);
-		int z[] = {1, qp(ROOT, MOD>>s)};
+        int z[] = {1, qp(ROOT, MOD>>s)};
         for (int i=k ; i<2*k ; i++){
             rt[i] = rt[i/2]*z[i&1]%MOD;
         }
     }
 
-	vector<int> rev(n);
+    vector<int> rev(n);
     for (int i=0 ; i<n ; i++){
         rev[i] = (rev[i/2]|(i&1)<<L)/2;
     }
