@@ -14,14 +14,10 @@ int query(int pos){
 }
 
 // const int MAX_N = (1<<20)
-// const int LOG_N = 20;
 int k_th(int k){ // 回傳 BIT 中第 k 小的元素（based-1）
-    int target = k-1, now = 0;
-    for (int i=LOG_N-1 ; i>=0 ; i--){
-        if (BIT[now+(1<<i)]<=k){
-            k -= BIT[now+(1<<i)];
-            now += 1<<i;
-        }
-    }
-    return now+1;
+    int res = 0;
+    for (int i=MAX_N>>1 ; i>=1 ; i>>=1)
+        if (bit[res+i]<k)
+            k -= bit[res+=i];
+    return res+1;
 }
