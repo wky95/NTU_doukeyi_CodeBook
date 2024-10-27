@@ -1,28 +1,20 @@
 struct Treap{
-    Treap *l, *r;
-    int pri, val, sz;
+    Treap *l = nullptr, *r = nullptr;
+    int pri = rand(), val = 0, sz = 1;
  
     Treap(int _val){
-        l = nullptr;
-        r = nullptr;
-        pri = rand();
         val = _val;
-        sz = 1;
     }
-} *root;
+};
  
-int size(Treap *a){
-    return a ? a->sz : 0;
-}
- 
+int size(Treap *t){return t ? t->sz : 0;}
 void pull(Treap *t){
     t->sz = size(t->l)+size(t->r)+1;
 }
  
-Treap *merge(Treap *a, Treap *b){
-    // 如果一個為空，就回傳另一個
+Treap* merge(Treap *a, Treap *b){
     if (!a || !b) return a ? a : b;
- 
+
     if (a->pri>b->pri){
         a->r = merge(a->r, b);
         pull(a);
@@ -35,32 +27,40 @@ Treap *merge(Treap *a, Treap *b){
  
 }
  
-void split(Treap *&t, int k, Treap *&a, Treap *&b){
-    // 如果樹為空就直接返回
-    if (!t) a = b = nullptr;
-
-    else if (size(t->l)+1<=k){ // 用 k 分割 treap
-        // 如果以左子節點為根 + 目前節點合法：
-        a = t;
-        split(t->r, k-size(t->l)-1, a->r, b);
-        pull(a);
+pair<Treap*, Treap*> split(Treap *&t, int k){ // 1-based <前 k 個元素, 其他元素>
+    if (!t) return {};
+    if (size(t->l)>=k){
+        auto pa = split(t->l, k);
+        t->l = pa.second;
+        pull(t);
+        return {pa.first, t};
     }else{
-        b = t;
-        split(t->l, k, a, b->l);
-        pull(b);
+        auto pa = split(t->r, k-size(t->l)-1);
+        t->r = pa.first;
+        pull(t);
+        return {t, pa.second};
     }
 }
- 
-ostream & operator << (ostream &os, Treap *t){
-    if (t==0) return os;
-    os << t->l;
-    os << (char)t->val;
-    os << t->r;
-    return os;
+
+// functions
+Treap* build(vector<int> v){
+    Treap* ret;
+    for (int i=0 ; i<SZ(v) ; i++){
+        ret = merge(ret, new Treap(v[i]));
+    }
+    return ret;
 }
- 
-void print(Treap *t){
-    if (t->l!=0) print(t->l);
-    cout << (char)t->val;
-    if (t->r!=0) print(t->r);
+
+array<Treap*, 3> cut(Treap *t, int l, int r){ // 1-based <前 1~l-1 個元素, l~r 個元素, r+1 個元素>
+    array<Treap*, 3> ret;
+    tie(t[1], t[2]) = split(t, r);
+    tie(t[0], t[1]) = split(t[1], l-1);
+    return ret;
+}
+
+void print(Treap *t, bool flag = true){
+    if (t->l!=0) print(t->l, false);
+    cout << t->val;
+    if (t->r!=0) print(t->r, false);
+    if (flag) cout << endl;
 }
