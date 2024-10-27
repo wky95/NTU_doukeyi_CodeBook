@@ -20,6 +20,7 @@ int CRT(int n, vector<int> &a, vector<int> &m){
     for (int i=0 ; i<n ; i++) p*=m[i];
     for (int i=0 ; i<n ; i++){
         M[i]=p/m[i];
+		int tmp;
         extgcd(M[i], m[i], inv_M[i], tmp);
         ans+=a[i]*inv_M[i]*M[i];
         ans%=p;
