@@ -45,9 +45,14 @@ def PrepareFileDict(CurPath):
                 (file_extension, toLatex(name), replace(fullpath)))
     return FileDict
 
+def cmp(x):
+    val = 0
+    if x == "Misc":
+        val = -1
+    return [val, x]
 
 def texCodeGen(out, FileDict):
-    for key in sorted(FileDict.keys()):
+    for key in sorted(FileDict.keys(), key = cmp):
         out.write("\\section{" + key + "}\n")
         for (file_extension, name, path) in FileDict[key]:
             out.write(
