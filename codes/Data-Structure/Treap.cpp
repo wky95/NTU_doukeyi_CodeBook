@@ -53,8 +53,8 @@ Treap* build(vector<int> v){
 
 array<Treap*, 3> cut(Treap *t, int l, int r){ // 1-based <前 1~l-1 個元素, l~r 個元素, r+1 個元素>
     array<Treap*, 3> ret;
-    tie(t[1], t[2]) = split(t, r);
-    tie(t[0], t[1]) = split(t[1], l-1);
+    tie(ret[1], ret[2]) = split(t, r);
+    tie(ret[0], ret[1]) = split(ret[1], l-1);
     return ret;
 }
 
