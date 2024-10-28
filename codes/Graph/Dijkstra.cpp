@@ -17,7 +17,7 @@ while (pq.size()){
     for (auto x : G[now_node]){
         if (now_dis+x.second<dis[x.first]){
             dis[x.first] = now_dis+x.second;
-            pq.push({x.first, dis[x.first]});
+            pq.push({dis[x.first], x.first});
         }
     }
 }
