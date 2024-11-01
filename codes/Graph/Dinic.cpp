@@ -57,4 +57,26 @@ struct Flow{
         }
         return ans;
     }
+    //  the code below constructs minimum cut
+    void dfs_mincut(int now, vector<bool> &vis){
+		vis[now] = true;
+		for (auto &[v, rc, rid] : G[now]){
+			if (vis[v]==false && rc>0){
+				dfs_mincut(v, vis);
+			}
+		}
+	}
+    
+	vector<pair<int, int>> construct(int n, int s, vector<pair<int,int>> &E){
+	    // E is G without capacity
+	    vector<bool> vis(n);
+		dfs_mincut(s, vis);
+		vector<pair<int, int>> ret;
+		for (auto &[u, v] : E){
+			if (vis[u]==true && vis[v]==false){
+                ret.emplace_back(u, v);
+			}
+		}
+		return ret;
+	}
 };
