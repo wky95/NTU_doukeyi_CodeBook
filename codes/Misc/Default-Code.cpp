@@ -8,7 +8,7 @@ using namespace std;
 #ifdef LOCAL
 #define cout cout << "\033[0;32m"
 #define cerr cerr << "\033[0;31m"
-#define endl "\n" << "\033[0m"
+#define endl endl << "\033[0m"
 #else
 #pragma GCC optimize("O3,unroll-loops")
 #pragma GCC target("avx,avx2,sse,sse2,sse3,sse4,popcnt")

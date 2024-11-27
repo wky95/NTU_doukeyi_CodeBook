@@ -15,10 +15,29 @@
   % \the\hoffset  \par
 
   \begin{multicols}{\NumberOfColumn}
+    \enlargethispage*{\baselineskip}
+    % \begin{center}
+    %   \Huge\textsc{ACM ICPC Team Reference - \TeamName}
+    %   \vspace{0.35cm}
+    % \end{center}
+    \tableofcontents
+  \end{multicols}
+
+  \fancypagestyle{plain}{%
+    \fancyfoot{}
+    \fancyhead[L]{\UniversityName{} / \TeamName{} / \Version}
+    \fancyhead[R]{\thepage}
+    \renewcommand{\headrulewidth}{0.4pt}
+    \renewcommand{\contentsname}{Contents}
+  }
+  \pagestyle{plain}
+  \newpage
+
+  \begin{multicols}{\NumberOfColumn}
     \pagestyle{fancy}
 
     \fancyfoot{}
-    \fancyhead[L]{\UniversityName{} \TeamName{} - \Version}
+    \fancyhead[L]{\UniversityName{} / \TeamName{} / \Version}
     \fancyhead[R]{\thepage}
 
     \renewcommand{\headrulewidth}{0.4pt}
@@ -27,15 +46,6 @@
     \scriptsize
     \input{list.tex}
     \clearpage
-  \end{multicols}
-  \newpage
-  \begin{multicols}{\NumberOfColumn}
-    \enlargethispage*{\baselineskip}
-    % \begin{center}
-    %   \Huge\textsc{ACM ICPC Team Reference - \TeamName}
-    %   \vspace{0.35cm}
-    % \end{center}
-    \tableofcontents
   \end{multicols}
   \clearpage
 
