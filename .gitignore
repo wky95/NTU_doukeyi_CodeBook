@@ -6,3 +6,6 @@
 *.toc
 formula.pdf
 list.tex
+*.fdb_latexmk
+*.fls
+*.xdv
