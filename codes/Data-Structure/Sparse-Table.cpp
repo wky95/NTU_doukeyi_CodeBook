@@ -18,4 +18,4 @@ struct SparseTable{
         int h = __lg(rr-ll);
         return min(st[h][ll], st[h][rr-(1<<h)]);
     }
-}
+};
