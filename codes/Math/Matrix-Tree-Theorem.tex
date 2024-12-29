@@ -1,0 +1,31 @@
+目標：給定一張無向圖，問他的生成樹數量。
+
+\noindent
+方法：先把所有自環刪掉，定義 $Q$ 為以下矩陣
+$$
+Q_{i,j} =
+\begin{cases}
+\deg(v_{i}) &  \text{if } i=j \\
+-(\text{邊 } v_{i}v_{j} \text{ 的數量}) & \text{otherwise}
+\end{cases}
+$$
+接著刪掉 $Q$ 的第一個 row 跟 column，它的 determinant 就是答案。
+
+\noindent
+目標：給定一張有向圖，問他的以 $r$ 為根，可以走到所有點生成樹數量。
+
+\vspace{1em}
+\hline
+\vspace{1em}
+
+\noindent
+方法：先把所有自環刪掉，定義 $Q$ 為以下矩陣
+$$
+Q_{i,j} =
+\begin{cases}
+\deg_{in}(v_{i}) &  \text{if } i=j \\
+-(\text{邊 } v_{i}v_{j} \text{ 的數量}) & \text{otherwise}
+\end{cases}
+$$
+\noindent
+接著刪掉 $Q$ 的第 $r$ 個 row 跟 column，它的 determinant 就是答案。
