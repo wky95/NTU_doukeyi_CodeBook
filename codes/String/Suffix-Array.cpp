@@ -77,4 +77,37 @@ struct SuffixArray {
             return len_1==res ? -1 : 1;
         }
     }
+
+    // 對於位置在 <=p 的後綴，找離他左邊/右邊最接近位置 >p 的後綴的 lcp，0-based
+    // pre[i] = s[i] 離他左邊最接近位置 >p 的後綴的 lcp，0-based
+    // suf[i] = s[i] 離他右邊最接近位置 >p 的後綴的 lcp，0-based
+    pair<vector<int>, vector<int>> get_left_and_right_lcp(int p){
+        vector<int> pre(p+1);
+        vector<int> suf(p+1);
+
+        { // build pre
+            int now = 0;
+            for (int i=0 ; i<s.size() ; i++){
+                if (sa[i]<=p){
+                    pre[sa[i]] = now;
+                    if (i<lcp.size()) now = min(now, lcp[i]);
+                }else{
+                    if (i<lcp.size()) now = lcp[i];
+                }
+            }
+        }
+        { // build suf
+            int now = 0;
+            for (int i=s.size()-1 ; i>=0 ; i--){
+                if (sa[i]<=p){
+                    suf[sa[i]] = now;
+                    if (i-1>=0) now = min(now, lcp[i-1]);
+                }else{
+                    if (i-1>=0) now = lcp[i-1];
+                }
+            }
+        }
+
+        return {pre, suf};
+    }
 };
