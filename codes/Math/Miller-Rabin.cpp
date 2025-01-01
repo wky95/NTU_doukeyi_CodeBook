@@ -1,7 +1,7 @@
 // O(log n)
 typedef Uint unsigned long long
 Uint modmul(Uint a, Uint b, Uint m) {
-    int ret = a*b - m*(Uint)(1.L/m*a*b);
+    int ret = a*b - m*(Uint)((long double)a*b/m);
     return ret + m*(ret < 0) - m*(ret>=(int)m);
 }
 
