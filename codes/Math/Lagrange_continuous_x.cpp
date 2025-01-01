@@ -17,15 +17,15 @@ inline int fp(long long x, int y) {
 
 // TO USE THIS TEMPLATE, YOU MUST MAKE SURE THAT THE MOD NUMBER IS A PRIME.
 struct Lagrange {
-    /*
-        Initialize a polynomial with f(1), f(2), ..., f(n).
-        This determines a polynomial f(x) whose degree is at most (n - 1).
-        Then you can call sample(x) and you get the value of f(x).
-    */
-    int n;
+/*
+    Initialize a polynomial with f(x_0), f(x_0 + 1), ..., f(x_0 + n).
+    This determines a polynomial f(x) whose degree is at most n.
+    Then you can call sample(x) and you get the value of f(x).
+    Complexity of init() and sample() are both O(n).
+*/
+    int m, shift; // m = n + 1
     vector<int> v, mul;
-
-    // O(log p + MAX_N) You can use this function if you don't have inv_fac array already.
+// You can use this function if you don't have inv_fac array already.
     void construct_inv_fac() {
         long long fac = 1;
         for (int i = 2; i < MAX_N; ++i) {
@@ -36,29 +36,29 @@ struct Lagrange {
             inv_fac[i - 1] = inv_fac[i] * i % mod;
         }
     }
-
-    // O(n), You call init() many times without having a second instance of this struct.
-    void init(vector<int> &u) {
+// You call init() many times without having a second instance of this struct.
+    void init(int X_0, vector<int> &u) {
         v = u;
+        shift = ((1 - X_0) % mod + mod) % mod;
         if (v.size() == 1) v.push_back(v[0]);
-        n = v.size();
-        mul.resize(n);
+        m = v.size();
+        mul.resize(m);
     }
-
-    // O(n) You can use sample(x) instead of sample(x % mod).
+// You can use sample(x) instead of sample(x % mod).
     int sample(int x) {
-        x = (x < 0) ? (x % mod + mod * 2) : (x % mod + mod);
+        x = ((long long)x + shift) % mod;
+        x = (x < 0) ? (x + mod) : x;
         long long now = 1;
-        for (int i = n; i >= 1; --i) {
+        for (int i = m; i >= 1; --i) {
             mul[i - 1] = now;
             now = now * (x - i) % mod;
         }
         int ret = 0;
-        bool neg = (n - 1) & 1;
+        bool neg = (m - 1) & 1;
         now = 1;
-        for (int i = 1; i <= n; ++i) {
+        for (int i = 1; i <= m; ++i) {
             int up = now * mul[i - 1] % mod;
-            int down = inv_fac[n - i] * inv_fac[i - 1] % mod;
+            int down = inv_fac[m - i] * inv_fac[i - 1] % mod;
             int tmp = ((long long)v[i - 1] * up % mod) * down % mod;
             ret += (neg && tmp) ? (mod - tmp) : (tmp);
             ret = (ret >= mod) ? (ret - mod) : ret;
@@ -77,7 +77,7 @@ int main() {
     }
     Lagrange L;
     L.construct_inv_fac();
-    L.init(v);
+    L.init(0, v);
     int x; cin >> x;
     cout << L.sample(x);
 }
