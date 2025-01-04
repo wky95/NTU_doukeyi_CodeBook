@@ -1,13 +1,15 @@
 import os
 p = os.listdir(".")
-file = input("input: ")
+f = input("input: ")
 
-if os.system(f"g++ {file}.cpp -std=c++17 -Wall -Wextra -Wshadow -O2 -DLOCAL -g -fsanitize=undefined,address -o {file}") != 0:
-    print("Compilation failed")
+if os.system(f"g++ {f}.cpp -std=c++17 -Wall -Wextra -Wshadow -O2 -DLOCAL -g -fsanitize=undefined,address -o {f}") != 0:
+    print("CE")
     exit(1)
 
 for x in p:
-    if x[:len(file)]==file and x[-3:]==".in":
-        if os.system(f"./{file} < {x}")!=0:
-            print("Runtime Error")
+    if x[:len(f)]==f and x[-3:]==".in":
+        print(x)
+        if os.system(f"./{f} < {x}")!=0:
+            print("RE")
             exit(1)
+        print()
