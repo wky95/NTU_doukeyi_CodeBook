@@ -1,4 +1,5 @@
-// 時間複雜度：O(V^2E)
+// 一般圖：O(E V^2)
+// 二分圖：O(E \sqrt{V})
 struct Flow{
     struct Edge{
         int v, rc, rid;
