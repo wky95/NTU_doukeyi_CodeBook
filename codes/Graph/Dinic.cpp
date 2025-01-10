@@ -1,5 +1,5 @@
-// 一般圖：O(E V^2)
-// 二分圖：O(E \sqrt{V})
+// 一般圖：O(EV²)
+// 二分圖：O(E√V)
 struct Flow{
     struct Edge{
         int v, rc, rid;
