@@ -25,6 +25,18 @@ struct point {
     friend int ori(point a, point b, point c) {
         return sign((b-a)^(c-a));
     }
+    friend int btw(point a, point b, point c) {
+        return ori(a, b, c) == 0 && sign((a-c)*(b-c)) <= 0;
+    }
+    // 判斷線段 ab, cd 是否相交
+    friend bool banana(point a, point b, point c, point d) {
+        int s1 = ori(a, b, c);
+        int s2 = ori(a, b, d);
+        int s3 = ori(c, d, a);
+        int s4 = ori(c, d, b);
+        if (btw(a, b, c) || btw(a, b, d) || btw(c, d, a) || btw(c, d, b)) return 1;
+        return (s1 * s2 < 0) && (s3 * s4 < 0);
+    }
 
     T operator*(point b) {return x * b.x + y * b.y; }
     T operator^(point b) {return x * b.y - y * b.x; }
@@ -94,20 +106,39 @@ struct polygon {
 //  可以在有 n 個點的簡單多邊形內，用 O(n) 的時間回傳：
 //  {1 : 在多邊形內, 0 : 在多邊形上, -1 : 在多邊形外}
     int in_polygon(point<T> a){
-        #define in(a, b, c) ( ori(a, b, c) \
-                ? 0 : (sign((a-c)*(b-c)) <= 0) )
         const T MAX_POS = (1e9 + 5); // [記得修改] 座標的最大值
         point<T> pre = v.back(), b(MAX_POS, a.y + 1);
         int cnt = 0;
 
         for (auto &i:v) {
-            if (in(pre, i, a)) return 0;
+            if (btw(pre, i, a)) return 0;
             if (banana(a, b, pre, i)) cnt++;
             pre = i;
         }
 
         return cnt%2 ? 1 : -1;
-        #undef in
+    }
+//  凸包專用的環狀二分搜，回傳 0-based index
+    int cycle_search(auto f, int tar) {
+        /// TO DO
+    }
+//  可以在有 n 個點的凸包內，用 O(log n) 的時間回傳：
+//  {1 : 在凸包內, 0 : 在凸包邊上, -1 : 在凸包外}
+    int in_convex(point<T> p) {
+        /// TO DO
+    }
+//  可以在有 n 個點的凸包內，用 O(log n) 的時間回傳：
+//  {1 : 穿過凸包, 0 : 剛好切過凸包, -1 : 沒碰到凸包}
+    int line_cut_convex(line<T> p) {
+        /// TO DO
+    }
+    int segment_cut_convex(line<T> p) {
+        /// TO DO
+    }
+//  回傳點過凸包的兩條切線的切點 index
+    pair<int,int> point_tangent(point<T> p) {
+        /// TO DO
+        // 注意特判：戳到凸包頂點的 case
     }
     friend int halfplane_intersection(vector<line<T>> &s, polygon<T> &P) {
         #define neg(p) ((p.y == 0 ? p.x : p.y) < 0)
@@ -139,3 +170,5 @@ struct polygon {
         return R - L + 1;
     }
 };
+/// TO DO : .svg maker
+

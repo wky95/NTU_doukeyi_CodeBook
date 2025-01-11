@@ -2,10 +2,10 @@ import sys
 from os import walk, system
 from os.path import join, split, splitext
 
-sys.stdin.reconfigure(encoding='utf-8')
-sys.stdout.reconfigure(encoding='utf-8')
+sys.stdin.reconfigure(encoding="utf-8")
+sys.stdout.reconfigure(encoding="utf-8")
 
-splitter = '\\' if sys.platform == "win32" else '/'
+splitter = "\\" if sys.platform == "win32" else "/"
 
 RequireOptionDict = {
     ".cpp": "includecpp",
@@ -16,13 +16,13 @@ RequireOptionDict = {
 
 
 def toLatex(string):
-    string = string.replace('_', " ")
-    string = string.replace('&', "\\&")
+    string = string.replace("_", " ")
+    string = string.replace("&", "\\&")
     return string
 
 
 def replace(string):
-    string = string.replace('\\', "/")
+    string = string.replace("\\", "/")
     return string
 
 
@@ -41,9 +41,9 @@ def PrepareFileDict(CurPath):
             DirName = toLatex(split(root)[-1])
             if DirName not in FileDict:
                 FileDict[DirName] = []
-            FileDict[DirName].append(
-                (file_extension, toLatex(name), replace(fullpath)))
+            FileDict[DirName].append((file_extension, toLatex(name), replace(fullpath)))
     return FileDict
+
 
 def cmp(x):
     val = 0
@@ -51,15 +51,23 @@ def cmp(x):
         val = -1
     return [val, x]
 
+
 def texCodeGen(out, FileDict):
-    for key in sorted(FileDict.keys(), key = cmp):
+    for key in sorted(FileDict.keys(), key=cmp):
         out.write("\\section{" + key + "}\n")
-        for (file_extension, name, path) in FileDict[key]:
+        for file_extension, name, path in sorted(FileDict[key]):
             out.write(
-                "  \\" + RequireOptionDict[file_extension] + "{" + name + "}{" + path + "}\n")
+                "  \\"
+                + RequireOptionDict[file_extension]
+                + "{"
+                + name
+                + "}{"
+                + path
+                + "}\n"
+            )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print("[#] Start Processing Code Book List...")
     print("[1] Get Codes...")
 
@@ -67,7 +75,7 @@ if __name__ == '__main__':
 
     print("    There are", len(FileDict), "file(s)")
     print("[2] Prepare Codes...")
-    with open('list.tex', 'w', encoding="utf-8") as fout:
+    with open("list.tex", "w", encoding="utf-8") as fout:
         texCodeGen(fout, FileDict)
 
     command = "xelatex -synctex=1 -interaction=nonstopmode --extra-mem-bot=10000000 Codebook.tex"
