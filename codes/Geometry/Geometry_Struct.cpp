@@ -52,7 +52,7 @@ struct line {
     // ax + by + c = 0
     T a, b, c; // |a|, |b| ≤ 2C, |c| ≤ 8C²
     line() {}
-    line(const point<T> &x, const point<T> &y) : p1(x), p2(y) {
+    line(const point<T> &x,const point<T> &y) : p1(x), p2(y){
         build();
     }
     void build() {
@@ -72,7 +72,7 @@ struct line {
     point<long double> line_intersection(line &l) {
         using P = point<long double>;
 		point<T> a = p2-p1, b = l.p2-l.p1, s = l.p1-p1;
-		return P(p1.x, p1.y) + P(a.x, a.y) * (((long double)(s^b)) / (a^b));
+		return P(p1.x,p1.y) + P(a.x,a.y) * (((long double)(s^b)) / (a^b));
 	}
 };
 
@@ -103,10 +103,10 @@ struct polygon {
         }
         swap(hull, v);
     }
-//  可以在有 n 個點的簡單多邊形內，用 O(n) 的時間回傳：
+//  可以在有 n 個點的簡單多邊形內，用 O(n) 判斷一個點：
 //  {1 : 在多邊形內, 0 : 在多邊形上, -1 : 在多邊形外}
     int in_polygon(point<T> a){
-        const T MAX_POS = (1e9 + 5); // [記得修改] 座標的最大值
+        const T MAX_POS = 1e9 + 5; // [記得修改] 座標的最大值
         point<T> pre = v.back(), b(MAX_POS, a.y + 1);
         int cnt = 0;
 
@@ -118,16 +118,41 @@ struct polygon {
 
         return cnt%2 ? 1 : -1;
     }
-//  凸包專用的環狀二分搜，回傳 0-based index
-    int cycle_search(auto f, int tar) {
-        /// TO DO
-    }
-//  可以在有 n 個點的凸包內，用 O(log n) 的時間回傳：
+/// 警告：所有凸包專用的函式都只接受逆時針排序且任三點不共線的凸包 ///
+//  可以在有 n 個點的凸包內，用 O(log n) 判斷一個點：
 //  {1 : 在凸包內, 0 : 在凸包邊上, -1 : 在凸包外}
     int in_convex(point<T> p) {
-        /// TO DO
+        int n = v.size();
+        int a = ori(v[0], v[1], p), b = ori(v[0], v[n-1], p);
+        if (a < 0 || b > 0) return -1;
+        if (btw(v[0], v[1], p)) return 0;
+        if (btw(v[0], v[n - 1], p)) return 0;
+        int l = 1, r = n - 1, mid;
+        while (l + 1 < r) {
+            mid = (l + r) >> 1;
+            if (ori(v[0], v[mid], p) >= 0) l = mid;
+            else r = mid;
+        }
+        int k = ori(v[l], v[r], p);
+        if (k <= 0) return k;
+        return 1;
     }
-//  可以在有 n 個點的凸包內，用 O(log n) 的時間回傳：
+//  凸包專用的環狀二分搜，回傳 0-based index
+    int cycle_search(auto &f) {
+        int i = 0, n = v.size();
+        for (int j = 1 << __lg(n); j > 0; j >>= 1) {
+            int nxt = (i + j) % n;
+            for (int k = 0; k < 2; ++k) {
+                if (f(i, nxt)) {
+                    i = nxt;
+                    break;
+                }
+                nxt = (i + n - j) % n;
+            }
+        }
+        return i;
+    }
+//  可以在有 n 個點的凸包內，用 O(log n) 判斷一條直線：
 //  {1 : 穿過凸包, 0 : 剛好切過凸包, -1 : 沒碰到凸包}
     int line_cut_convex(line<T> p) {
         /// TO DO
@@ -135,10 +160,22 @@ struct polygon {
     int segment_cut_convex(line<T> p) {
         /// TO DO
     }
-//  回傳點過凸包的兩條切線的切點 index
-    pair<int,int> point_tangent(point<T> p) {
-        /// TO DO
-        // 注意特判：戳到凸包頂點的 case
+//  回傳點過凸包的兩條切線的切點的 0-based index
+    pair<int,int> convex_tangent_point(point<T> p) {
+        auto gt = [&](int neg) {
+            auto f = [&](int x, int y) {
+                return ori(p, v[x], v[y]) == neg;
+            };
+            return cycle_search(f);
+        };
+        int x = gt(1), y = gt(-1), n = v.size();
+        int z = (v[x] == p) ? x : y;
+        if (v[z] == p) {
+            return {(z + n - 1) % n, (z + 1) % n};
+        }
+        else {
+            return {x, y};
+        }
     }
     friend int halfplane_intersection(vector<line<T>> &s, polygon<T> &P) {
         #define neg(p) ((p.y == 0 ? p.x : p.y) < 0)
@@ -171,4 +208,3 @@ struct polygon {
     }
 };
 /// TO DO : .svg maker
-
