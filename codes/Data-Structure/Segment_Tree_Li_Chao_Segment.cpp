@@ -5,7 +5,7 @@
 LC_Segment_Tree st(n);
 
 函式：
-update(val)：將一個 pair <a, b> 代表插入一條 y=ax+b 的直線
+update_segment({a, b}, ql, qr)：在 [ql, qr) 插入一條 y=ax+b 的線段
 query(x)：查詢所有直線在位置 x 的最小值
 */
 const int MAX_V = 1e6+10; // 值域最大值
@@ -24,10 +24,10 @@ struct LC_Segment_Tree{
     LC_Segment_Tree(int n = 0){
         arr.resize(4*n);
     }
- 
+
     void update(Node val, int idx = 0, int ll = 0, int rr = MAX_V){
         if (rr-ll==0) return;
-        if (rr-ll==1){
+        if (rr-ll<=1){
             if (val.y(ll)<arr[idx].y(ll)){
                 arr[idx] = val;
             }
@@ -42,6 +42,21 @@ struct LC_Segment_Tree{
             swap(arr[idx], val); // 在左子樹中，新線比舊線還要好
             update(val, idx*2+2, mid, rr);
         }
+        return;
+    }
+    
+    // 在 [ql, qr) 加上一條 val 的線段
+    void update_segment(Node val, int ql, int qr, int idx = 0, int ll = 0, int rr = MAX_V){
+        if (rr-ll==0) return;
+        if (rr<=ql || qr<=ll) return;
+        if (ql<=ll && rr<=qr){
+            update(val, idx, ll, rr);
+            return;
+        }
+ 
+        int mid = (ll+rr)/2;
+        update_segment(val, ql, qr, idx*2+1, ll, mid);
+        update_segment(val, ql, qr, idx*2+2, mid, rr);
         return;
     }
  
