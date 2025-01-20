@@ -26,6 +26,7 @@ struct LC_Segment_Tree{
     }
  
     void update(Node val, int idx = 0, int ll = 0, int rr = MAX_V){
+        if (rr-ll==0) return;
         if (rr-ll==1){
             if (val.y(ll)<arr[idx].y(ll)){
                 arr[idx] = val;
@@ -45,6 +46,7 @@ struct LC_Segment_Tree{
     }
  
     int query(int x, int idx = 0, int ll = 0, int rr = MAX_V){
+        if (rr-ll==0) return INF;
         if (rr-ll==1){
             return arr[idx].y(ll);
         }
