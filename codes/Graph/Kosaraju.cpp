@@ -10,9 +10,8 @@ SCC_compress G(n): 宣告一個有 n 個點的圖
 SCC[i] = 某個 SCC 中的所有點
 SCC_id[i] = 第 i 個點在第幾個 SCC
 */
-// c8b146
 struct SCC_compress{
-    int n = 0, m = 0;
+    int N, M, sz;
     vector<vector<int>> G, inv_G, result;
     vector<pair<int, int>> edges;
     vector<bool> vis;
@@ -21,67 +20,53 @@ struct SCC_compress{
     vector<vector<int>> SCC;
     vector<int> SCC_id;
 
-    SCC_compress(int _n){
-        n = _n;
-        G.resize(n);
-        inv_G.resize(n);
-        result.resize(n);
-        vis.resize(n);
-        SCC_id.resize(n);
+    SCC_compress(int _N) : 
+    N(_N), M(0), sz(0),
+    G(N), inv_G(N),
+    vis(N), SCC_id(N)
+    {}
+
+    vector<int> operator [] (int x){
+        return result[x];
     }
 
     void add_edge(int u, int v){
         G[u].push_back(v);
         inv_G[v].push_back(u);
         edges.push_back({u, v});
-        m++;
+        M++;
     }
 
     void dfs1(vector<vector<int>> &G, int now){
         vis[now] = 1;
-        for (auto x : G[now]){
-            if (vis[x]==0){
-                dfs1(G, x);
-            }
-        }
+        for (auto x : G[now]) if (!vis[x]) dfs1(G, x);
         order.push_back(now);
-        return;
     }
     
     void dfs2(vector<vector<int>> &G, int now){
         SCC_id[now] = SCC.size()-1;
         SCC.back().push_back(now);
         vis[now] = 1;
-    
-        for (auto x : G[now]){
-            if (vis[x]==0){
-                dfs2(G, x);
-            }
-        }
-        return;
+        for (auto x : G[now]) if (!vis[x]) dfs2(G, x);
     }
 
     void compress(){
         fill(vis.begin(), vis.end(), 0);
-        for (int i=0 ; i<n ; i++){
-            if (vis[i]==0){
-                dfs1(G, i);
-            }
-        }
+        for (int i=0 ; i<N ; i++) if (!vis[i]) dfs1(G, i);
 
         fill(vis.begin(), vis.end(), 0);
         reverse(order.begin(), order.end());
-        for (int i=0 ; i<n ; i++){
-            if (vis[order[i]]==0){
+        for (int i=0 ; i<N ; i++){
+            if (!vis[order[i]]){
                 SCC.push_back(vector<int>());
                 dfs2(inv_G, order[i]);
             }
         }
 
-        for (int i=0 ; i<m ; i++){
-            if (SCC_id[edges[i].first]!=SCC_id[edges[i].second]){
-                result[SCC_id[edges[i].first]].push_back(SCC_id[edges[i].second]);
-            }
+        result.resize(SCC.size());
+        sz = SCC.size();
+        for (auto [u, v] : edges){
+            if (SCC_id[u]!=SCC_id[v]) result[SCC_id[u]].push_back(SCC_id[v]);
         }
         for (int i=0 ; i<SCC.size() ; i++){
             sort(result[i].begin(), result[i].end());

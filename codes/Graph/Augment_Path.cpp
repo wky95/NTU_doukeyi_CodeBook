@@ -1,52 +1,88 @@
 struct AugmentPath{
     int n, m;
     vector<vector<int>> G;
-    vector<int> ma, mb;
-    vector<int> vis;
-    int now_time;
-    int res;
+    vector<int> mx, my;
+    vector<int> visx, visy;
+    int stamp;
 
-    AugmentPath(int _n, int _m) : n(_n), m(_m), G(n), ma(n, -1), mb(m, -1), vis(n){
-        now_time = 0;
-        res = 0;
+    AugmentPath(int _n, int _m) : n(_n), m(_m), G(n), mx(n, -1), my(m, -1), visx(n), visy(n){
+        stamp = 0;
     }
 
     void add(int x, int y){
         G[x].push_back(y);
     }
 
-    bool dfs(int now){
-        vis[now] = now_time;
+    // bb03e2
+    bool dfs1(int now){
+        visx[now] = stamp;
 
         for (auto x : G[now]){
-            if (mb[x]==-1){
-                ma[now] = x;
-                mb[x] = now;
+            if (my[x]==-1){
+                mx[now] = x;
+                my[x] = now;
                 return true;
             }
         }
         for (auto x : G[now]){
-            if (vis[mb[x]]!=now_time && dfs(mb[x])){
-                ma[now] = x;
-                mb[x] = now;
+            if (visx[my[x]]!=stamp && dfs1(my[x])){
+                mx[now] = x;
+                my[x] = now;
                 return true;
             }
         }
         return false;
     }
 
-    int solve(){
+    vector<pair<int, int>> find_max_matching(){
+        vector<pair<int, int>> ret;
+
         while (true){
-            now_time++;
-            int cnt = 0;
+            stamp++;
+            int tmp = 0;
             for (int i=0 ; i<n ; i++){
-                if (ma[i]==-1 && dfs(i)){
-                    cnt++;
-                }
+                if (mx[i]==-1 && dfs1(i)) tmp++;
             }
-            if (cnt==0) break;
-            res += cnt;
+            if (tmp==0) break;
         }
-        return res;
+
+        for (int i=0 ; i<n ; i++){
+            if (mx[i]!=-1){
+                ret.push_back({i, mx[i]});
+            }
+        }
+        return ret;
+    }
+
+    // 645577
+    void dfs2(int now){
+        visx[now] = true;
+ 
+        for (auto x : G[now]){
+            if (my[x]!=-1 && visy[x]==false){
+                visy[x] = true;
+                dfs2(my[x]);
+            }
+        }
+    }
+
+    // 要先執行 find_max_matching 一次
+    vector<pair<int, int>> find_min_vertex_cover(){
+        fill(visx.begin(), visx.end(), false);
+        fill(visy.begin(), visy.end(), false);
+
+        vector<pair<int, int>> ret;
+        for (int i=0 ; i<n ; i++){
+            if (mx[i]==-1) dfs2(i);
+        }
+ 
+        for (int i=0 ; i<n ; i++){
+            if (visx[i]==false) ret.push_back({1, i});
+        }
+        for (int i=0 ; i<m ; i++){
+            if (visy[i]==true) ret.push_back({2, i});
+        }
+
+        return ret;
     }
 };

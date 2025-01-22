@@ -25,7 +25,7 @@ struct point {
     friend int ori(point a, point b, point c) {
         return sign((b-a)^(c-a));
     }
-    friend int btw(point a, point b, point c) {
+    friend bool btw(point a, point b, point c) {
         return ori(a, b, c) == 0 && sign((a-c)*(b-c)) <= 0;
     }
     // 判斷線段 ab, cd 是否相交
@@ -118,7 +118,7 @@ struct polygon {
 
         return cnt%2 ? 1 : -1;
     }
-/// 警告：所有凸包專用的函式都只接受逆時針排序且任三點不共線的凸包 ///
+/// 警告：以下所有凸包專用的函式都只接受逆時針排序且任三點不共線的凸包 ///
 //  可以在有 n 個點的凸包內，用 O(log n) 判斷一個點：
 //  {1 : 在凸包內, 0 : 在凸包邊上, -1 : 在凸包外}
     int in_convex(point<T> p) {
@@ -139,39 +139,117 @@ struct polygon {
     }
 //  凸包專用的環狀二分搜，回傳 0-based index
     int cycle_search(auto &f) {
-        int i = 0, n = v.size();
-        for (int j = 1 << __lg(n); j > 0; j >>= 1) {
-            int nxt = (i + j) % n;
-            for (int k = 0; k < 2; ++k) {
-                if (f(i, nxt)) {
-                    i = nxt;
-                    break;
-                }
-                nxt = (i + n - j) % n;
-            }
+        int n = v.size(), l = 0, r = n;
+        bool rv = f(1, 0);
+        while (r - l > 1) {
+            int m = (l + r) / 2;
+            if (f(0, m) ? rv: f(m, (m + 1) % n)) r = m;
+            else l = m;
         }
-        return i;
+        return f(l, r % n) ? l : r % n;
     }
 //  可以在有 n 個點的凸包內，用 O(log n) 判斷一條直線：
 //  {1 : 穿過凸包, 0 : 剛好切過凸包, -1 : 沒碰到凸包}
-    int line_cut_convex(line<T> p) {
-        /// TO DO
-    }
-    int segment_cut_convex(line<T> p) {
-        /// TO DO
-    }
-//  回傳點過凸包的兩條切線的切點的 0-based index
-    pair<int,int> convex_tangent_point(point<T> p) {
+    int line_cut_convex(line<T> L) {
+        point<T> p(L.a, L.b); //  記得 L 要 build
         auto gt = [&](int neg) {
             auto f = [&](int x, int y) {
+                return sign((v[x] - v[y]) * p) == neg;
+            };
+            return -(v[cycle_search(f)] * p);
+        };
+        T x = gt(1), y = gt(-1);
+        if (L.c < x || y < L.c) return -1;
+        return not (L.c == x || L.c == y);
+    }
+//  可以在有 n 個點的凸包內，用 O(log n) 判斷一個線段：
+//  {1 : 存在一個凸包上的邊可以把這個線段切成兩半,
+//   0 : 有碰到凸包但沒有任何凸包上的邊可以把它切成兩半,
+//  -1 : 沒碰到凸包}
+/// 除非線段兩端點都不在凸包邊上，否則此函數回傳 0 的時候不一定表示線段沒有通過凸包內部 ///
+    int segment_across_convex(line<T> L) {
+        point<T> p(L.a, L.b); //  記得 L 要 build
+        auto gt = [&](int neg) {
+            auto f = [&](int x, int y) {
+                return sign((v[x] - v[y]) * p) == neg;
+            };
+            return cycle_search(f);
+        };
+        int i = gt(1), j = gt(-1), n = v.size();
+        T x = -(v[i] * p), y = -(v[j] * p);
+        if (L.c < x || y < L.c) return -1;
+        if (L.c == x || L.c == y) return 0;
+
+        if (i > j) swap(i, j);
+        auto g = [&](int x, int lim) {
+            int now = 0, nxt;
+            for (int i = 1 << __lg(lim); i > 0; i /= 2) {
+                if (now + i > lim) continue;
+                nxt = (x + i) % n;
+                if (L.ori(v[x]) * L.ori(v[nxt]) >= 0) {
+                    x = nxt;
+                    now += i;
+                }
+            } //   ↓ BE CAREFUL
+            return -(ori(v[x], v[(x + 1) % n], L.p1) * ori(v[x], v[(x + 1) % n], L.p2));
+        };
+        return max(g(i, j - i), g(j, n - (j - i)));
+    }
+//  可以在有 n 個點的凸包內，用 O(log n) 判斷一個線段：
+//  {1 : 線段上存在某一點位於凸包內部（邊上不算）,
+//   0 : 線段上存在某一點碰到凸包的邊但線段上任一點均不在凸包內部,
+//  -1 : 線段完全在凸包外面}
+    int segment_pass_convex_interior(line<T> L) {
+        if (in_convex(L.p1) == 1 || in_convex(L.p2) == 1) return 1;
+        point<T> p(L.a, L.b); //  記得 L 要 build
+        auto gt = [&](int neg) {
+            auto f = [&](int x, int y) {
+                return sign((v[x] - v[y]) * p) == neg;
+            };
+            return cycle_search(f);
+        };
+        int i = gt(1), j = gt(-1), n = v.size();
+        T x = -(v[i] * p), y = -(v[j] * p);
+        if (L.c < x || y < L.c) return -1;
+        if (L.c == x || L.c == y) return 0;
+
+        if (i > j) swap(i, j);
+        auto g = [&](int x, int lim) {
+            int now = 0, nxt;
+            for (int i = 1 << __lg(lim); i > 0; i /= 2) {
+                if (now + i > lim) continue;
+                nxt = (x + i) % n;
+                if (L.ori(v[x]) * L.ori(v[nxt]) > 0) {
+                    x = nxt;
+                    now += i;
+                }
+            } //   ↓ BE CAREFUL
+            return -(ori(v[x], v[(x + 1) % n], L.p1) * ori(v[x], v[(x + 1) % n], L.p2));
+        };
+        int ret = max(g(i, j - i), g(j, n - (j - i)));
+        return (ret == 0) ? (in_convex(L.p1) == 0 && in_convex(L.p2) == 0) : ret;
+    }
+//  回傳點過凸包的兩條切線的切點的 0-based index（不保證兩條切線的順逆時針關係）
+    pair<int,int> convex_tangent_point(point<T> p) {
+        int n = v.size(), z = -1, edg = -1;
+        auto gt = [&](int neg) {
+            auto check = [&](int x) {
+                if (v[x] == p) z = x;
+                if (btw(v[x], v[(x + 1) % n], p)) edg = x;
+                if (btw(v[(x + n - 1) % n], v[x], p)) edg = (x + n - 1) % n;
+            };
+            auto f = [&](int x, int y) {
+                check(x); check(y);
                 return ori(p, v[x], v[y]) == neg;
             };
             return cycle_search(f);
         };
-        int x = gt(1), y = gt(-1), n = v.size();
-        int z = (v[x] == p) ? x : y;
-        if (v[z] == p) {
+        int x = gt(1), y = gt(-1);
+        if (z != -1) {
             return {(z + n - 1) % n, (z + 1) % n};
+        }
+        else if (edg != -1) {
+            return {edg, (edg + 1) % n};
         }
         else {
             return {x, y};
@@ -207,4 +285,3 @@ struct polygon {
         return R - L + 1;
     }
 };
-/// TO DO : .svg maker
