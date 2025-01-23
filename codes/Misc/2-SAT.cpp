@@ -1,6 +1,3 @@
-#include <bits/stdc++.h>
-using namespace std;
-
 struct TWO_SAT {
     int n, N;
     vector<vector<int>> G, rev_G;
@@ -68,37 +65,3 @@ struct TWO_SAT {
             res.push_back(assignment[i]);
     }
 };
-/* CSES Giant Pizza
-3 5
-+ 1 + 2
-- 1 + 3
-
-- + + + -
-*/
-int main() {
-    int n, m;
-    cin >> n >> m;
-    TWO_SAT E;
-    E.init(m);
-
-    char c1, c2;
-    int inp1, inp2;
-    for (int i = 0; i < n; i++) {
-        cin >> c1 >> inp1;
-        cin >> c2 >> inp2;
-        E.add_disjunction(inp1 - 1, c1 == '-', inp2 - 1, c2 == '-');
-    }
-
-    bool able = E.solve();
-    if (able) {
-        vector <int> ans;
-        E.get_result(ans);
-        for (int i : ans)
-            cout << (i == true ? '+' : '-') << ' ';
-        cout << '\n';
-    } else {
-        cout << "IMPOSSIBLE\n";
-    }
-
-    return 0;
-}
