@@ -1,15 +1,21 @@
 import os
-p = os.listdir(".")
-f = input("input: ")
 
-if os.system(f"g++ {f}.cpp -std=c++17 -Wall -Wextra -Wshadow -O2 -DLOCAL -g -fsanitize=undefined,address -o {f}") != 0:
-    print("CE")
-    exit(1)
+f = "pA"
 
-for x in p:
-    if x[:len(f)]==f and x[-3:]==".in":
-        print(x)
-        if os.system(f"./{f} < {x}")!=0:
-            print("RE")
-            exit(1)
-        print()
+while 1:
+    i = input("input: ")
+    p = os.listdir(".")
+    if i != "":
+        f = i
+    print(f"file = {f}")
+    if os.system(f"g++ {f}.cpp -std=c++17 -Wall -Wextra -Wshadow -O2 -D LOCAL -g -fsanitize=undefined,address -o {f}"):
+        print("CE")
+        continue
+    os.system("clear")
+
+    for x in sorted(p):
+        if f in x and ".in" in x:
+            print(x)
+            if os.system(f"./{f} < {x}"):
+                print("RE")
+            print()
