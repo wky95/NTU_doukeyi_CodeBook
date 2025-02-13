@@ -18,6 +18,7 @@ struct Flow{
         it.resize(n);
     }
 
+    // ce56d6
     T dfs(int u, int t, T f){
         if (u == t || f == 0) return f;
         for (int &i=it[u] ; i<G[u].size() ; i++){
@@ -32,6 +33,7 @@ struct Flow{
         return 0;
     }
 
+    // e22e39
     T flow(int s, int t){
         T ans = 0;
         while (true){

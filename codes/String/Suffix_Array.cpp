@@ -2,6 +2,8 @@
 struct SuffixArray {
     string s;
     vector<int> sa, lcp;
+
+    // 69ced9
     SuffixArray(string _s, int lim = 256) {
         s = _s;
         int n = s.size()+1, k = 0, a, b;
@@ -32,6 +34,7 @@ struct SuffixArray {
         lcp.erase(lcp.begin(), lcp.begin()+2);
     }
 
+    // f49583
     vector<int> pos; // pos[i] = i 這個值在 pos 的哪個地方
     SparseTable st;
     void init_lcp(){
@@ -63,6 +66,7 @@ struct SuffixArray {
 
     // 檢查 [l1, r1] 跟 [l2, r2] 的大小關係，0-based
     // 如果前者小於後者，就回傳 <0，相等就回傳 =0，否則回傳 >0
+    // 5b8db0
     int substring_cmp(int l1, int r1, int l2, int r2){
         int len_1 = r1-l1+1;
         int len_2 = r2-l2+1;
@@ -81,6 +85,7 @@ struct SuffixArray {
     // 對於位置在 <=p 的後綴，找離他左邊/右邊最接近位置 >p 的後綴的 lcp，0-based
     // pre[i] = s[i] 離他左邊最接近位置 >p 的後綴的 lcp，0-based
     // suf[i] = s[i] 離他右邊最接近位置 >p 的後綴的 lcp，0-based
+    // da12fa
     pair<vector<int>, vector<int>> get_left_and_right_lcp(int p){
         vector<int> pre(p+1);
         vector<int> suf(p+1);
