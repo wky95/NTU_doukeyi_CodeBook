@@ -44,8 +44,8 @@ pair<Treap*, Treap*> split(Treap *&t, int k){ // 1-based <前 k 個元素, 其�
 
 // functions
 Treap* build(vector<int> v){
-    Treap* ret;
-    for (int i=0 ; i<SZ(v) ; i++){
+    Treap* ret = nullptr;
+    for (int i=0 ; i<v.size() ; i++){
         ret = merge(ret, new Treap(v[i]));
     }
     return ret;

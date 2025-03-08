@@ -1,3 +1,4 @@
+// O(n^2) 找到最大權匹配
 struct KuhnMunkres{
     int n; // max(n, m)
     vector<vector<int>> G;

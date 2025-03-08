@@ -5,22 +5,19 @@ struct Matrix{
     Matrix(int _n, int _m){
         n = _n;
         m = _m;
-        arr.resize(n, vector<int>(m));
+        arr.assign(n, vector<int>(m));
+    }
+
+    vector<int> operator [] (int i){
+        return arr[i];
     }
 
     Matrix operator * (Matrix b){
-        Matrix b_t(b.m, b.n);
-        for (int i=0 ; i<b.n ; i++){
-            for (int j=0 ; j<b.m ; j++){
-                b_t.arr[j][i] = b.arr[i][j];
-            }
-        }
-
         Matrix ret(n, b.m);
         for (int i=0 ; i<n ; i++){
             for (int j=0 ; j<b.m ; j++){
                 for (int k=0 ; k<m ; k++){
-                    ret.arr[i][j] += arr[i][k]*b_t.arr[j][k];
+                    ret.arr[i][j] += arr[i][k]*b.arr[k][j]%MOD;
                     ret.arr[i][j] %= MOD;
                 }
             }
