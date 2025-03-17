@@ -8,7 +8,7 @@ struct Matrix{
         arr.assign(n, vector<int>(m));
     }
 
-    vector<int> operator [] (int i){
+    vector<int> & operator [] (int i){
         return arr[i];
     }
 

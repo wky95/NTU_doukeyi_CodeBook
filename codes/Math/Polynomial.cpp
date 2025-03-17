@@ -1,15 +1,15 @@
 struct Poly {
     int len, deg;
-    mint *a;
+    int *a;
     // len = 2^k >= the original length
     Poly(): len(0), deg(0), a(nullptr) {}
     Poly(int _n) {
         len = 1;
         deg = _n - 1;
         while (len < _n) len <<= 1;
-        a = new mint[len]();
+        a = (ll*) calloc(len, sizeof(ll));
     }
-    Poly(int l, int d, mint *b) {
+    Poly(int l, int d, int *b) {
         len = l;
         deg = d;
         a = b;
@@ -17,20 +17,19 @@ struct Poly {
     void resize(int _n) {
         int len1 = 1;
         while (len1 < _n) len1 <<= 1;
-
-        mint *res = new mint[len1]();
-        for (int i = 0; i < min(len, _n); i++)
+        int *res = (ll*) calloc(len1, sizeof(ll));
+        for (int i = 0; i < min(len, _n); i++) {
             res[i] = a[i];
+        }
         len = len1;
         deg = _n - 1;
-        delete [] a;
+        free(a);
         a = res;
     }
     Poly& operator=(const Poly rhs) {
         this->len = rhs.len;
         this->deg = rhs.deg;
-        delete [] this->a;
-        this->a = new mint[this->len]();
+        this->a = (ll*)realloc(this->a, sizeof(ll) * len);
         copy(rhs.a, rhs.a + len, this->a);
         return *this;
     }
@@ -41,17 +40,17 @@ struct Poly {
         while (l2 > 0 and rhs.a[l2 - 1] == 0) l2--;
         int l = 1;
         while (l < max(l1 + l2 - 1, d1 + d2 + 1)) l <<= 1;
-        mint *x, *y, *res;
-        x = new mint[l]();
-        y = new mint[l]();
-        res = new mint[l]();
+        int *x, *y, *res;
+        x = (ll*) calloc(l, sizeof(ll));
+        y = (ll*) calloc(l, sizeof(ll));
+        res = (ll*) calloc(l, sizeof(ll));
         copy(this->a, this->a + l1, x);
         copy(rhs.a, rhs.a + l2, y);
-        ntt.NTT(x, l, 1); ntt.NTT(y, l, 1);
+        ntt.tran(l, x); ntt.tran(l, y);
         FOR (i, 0, l - 1) 
-            res[i] = x[i] * y[i];
-        ntt.NTT(res, l, -1);
-        delete [] x; delete [] y;
+            res[i] = x[i] * y[i] % mod;
+        ntt.tran(l, res, true);
+        free(x); free(y);
         return Poly(l, d1 + d2, res);
     }
     Poly operator+(Poly rhs) {
@@ -60,9 +59,15 @@ struct Poly {
         Poly res;
         res.len = l;
         res.deg = max(this->deg, rhs.deg);
-        res.a = new mint[l]();
-        FOR (i, 0, l1 - 1) res.a[i] += this->a[i];
-        FOR (i, 0, l2 - 1) res.a[i] += rhs.a[i];
+        res.a = (ll*) calloc(l, sizeof(ll));
+        FOR (i, 0, l1 - 1) {
+            res.a[i] += this->a[i];
+            if (res.a[i] >= mod) res.a[i] -= mod;
+        }
+        FOR (i, 0, l2 - 1) {
+            res.a[i] += rhs.a[i];
+            if (res.a[i] >= mod) res.a[i] -= mod;
+        }
         return res;
     }
     Poly operator-(Poly rhs) {
@@ -71,15 +76,24 @@ struct Poly {
         Poly res;
         res.len = l;
         res.deg = max(this->deg, rhs.deg);
-        res.a = new mint[l]();
-        FOR (i, 0, l1 - 1) res.a[i] += this->a[i];
-        FOR (i, 0, l2 - 1) res.a[i] -= rhs.a[i];
+        res.a = (ll*) calloc(l, sizeof(ll));
+        FOR (i, 0, l1 - 1) {
+            res.a[i] += this->a[i];
+            if (res.a[i] >= mod) res.a[i] -= mod;
+        }
+        FOR (i, 0, l2 - 1) {
+            res.a[i] -= rhs.a[i];
+            if (res.a[i] < 0) res.a[i] += mod;
+        }
         return res;
     }
-    Poly operator*(const mint rhs) {
+    Poly operator*(const int rhs) {
         Poly res;
         res = *this;
-        FOR (i, 0, res.len - 1) res.a[i] = res.a[i] * rhs;
+        FOR (i, 0, res.len - 1) {
+            res.a[i] = res.a[i] * rhs % mod;
+            if (res.a[i] < 0) res.a[i] += mod;
+        }
         return res;
     }
     Poly(vector<int> f) {
@@ -87,30 +101,32 @@ struct Poly {
         len = 1;
         deg = _n - 1;
         while (len < _n) len <<= 1;
-        a = new mint[len]();
+        a = (ll*) calloc(len, sizeof(ll));
         FOR (i, 0, deg) a[i] = f[i];
     }
     Poly derivative() {
         Poly g(this->deg);
-        FOR (i, 1, this->deg) 
-            g.a[i - 1] = this->a[i] * i;
+        FOR (i, 1, this->deg) {
+            g.a[i - 1] = this->a[i] * i % mod;
+        }
         return g;
     }
     Poly integral() {
         Poly g(this->deg + 2);
-        FOR (i, 0, this->deg) 
-            g.a[i + 1] = this->a[i] / (i + 1);
+        FOR (i, 0, this->deg) {
+            g.a[i + 1] = this->a[i] * ::inv(i + 1) % mod;
+        }
         return g;
     }
     Poly inv(int len1 = -1) {
         if (len1 == -1) len1 = this->len;
-        Poly g(1); g.a[0] = a[0].inv();
+        Poly g(1); g.a[0] = ::inv(a[0]);
         for (int l = 1; l < len1; l <<= 1) {
             Poly t; t = *this;
             t.resize(l << 1);
             t = g * g * t;
             t.resize(l << 1);
-            Poly g1 = g * mint(2) - t;
+            Poly g1 = g * 2 - t;
             swap(g, g1);
         }
         return g;
@@ -147,10 +163,10 @@ struct Poly {
             return res;
         }
         Poly b(a.deg - i + 1);
-        mint inv1 = a.a[i].inv();
+        int inv1 = ::inv(a.a[i]);
         FOR (j, 0, b.deg) 
-            b.a[j] = a.a[j + i] * inv1;
-        Poly res1 = (b.ln() * mint(n % mod)).exp() * (a.a[i].pow(n));
+            b.a[j] = a.a[j + i] * inv1 % mod;
+        Poly res1 = (b.ln() * (n % mod)).exp() * (::power(a.a[i], n));
         Poly res2(a.deg + 1);
         FOR (j, 0, min((ll)(res1.deg), (ll)(a.deg - n * i))) 
             res2.a[j + n * i] = res1.a[j];

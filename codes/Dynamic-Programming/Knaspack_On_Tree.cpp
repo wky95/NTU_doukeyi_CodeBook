@@ -3,11 +3,6 @@
 #define F first
 #define S second
 #define all(x) begin(x), end(x)
-#ifdef LOCAL
-#define HEHE freopen("in.txt", "r", stdin);
-#else
-#define HEHE ios_base::sync_with_stdio(0), cin.tie(0);
-#endif
 using namespace std;
 
 #define chmax(a, b) (a) = (a) < (b) ? (b) : (a)
@@ -26,29 +21,29 @@ void dfs(int x) {
     for (int i : adj[x]) dfs(i), sz[x] += sz[i];
     cur++;
     // choose x
-    FOR (i, w[x], W) {
+    for (int i=w[x] ; i<=W ; i++){
         dp[cur][i] = dp[cur - 1][i - w[x]] + v[x];
     }
     // not choose x
-    FOR (i, 0, W) {
+    for (int i=0 ; i<=W ; i++){
         chmax(dp[cur][i], dp[cur - sz[x]][i]);
     }
 }
 
 signed main() {
-    HEHE
     cin >> N >> W;
     adj.resize(N + 1);
     w.assign(N + 1, 0);
     v.assign(N + 1, 0);
     sz.assign(N + 1, 0);
     dp.assign(N + 2, vector<int>(W + 1, 0));
-    FOR (i, 1, N) {
+    for (int i=1 ; i<=N ; i++){
         int p; cin >> p;
         adj[p].push_back(i);
     }
-    FOR (i, 1, N) cin >> w[i];
-    FOR (i, 1, N) cin >> v[i]; 
+
+    for (int i=1 ; i<=N ; i++) cin >> w[i];
+    for (int i=1 ; i<=N ; i++) cin >> v[i]; 
     dfs(0);
     cout << dp[N + 1][W] << '\n';
 }
