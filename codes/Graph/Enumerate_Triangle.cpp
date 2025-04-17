@@ -1,4 +1,4 @@
-// O(m log m) 枚舉無向圖所有三角形，0-based
+// O(m sqrt m) 枚舉無向圖所有三角形，0-based
 void Enumerate_Triangle(vector<pair<int, int>> &edge, vector<int> &deg){
     int n = deg.size();
     int m = edge.size();
