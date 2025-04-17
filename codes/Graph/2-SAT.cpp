@@ -46,9 +46,10 @@ struct TWO_SAT {
         }
         return true;
     }
-    void add_disjunction(int a, bool na, int b, bool nb) { // A or B 都是 0-based
-        // na means whether a is negative or not
-        // nb means whether b is negative or not
+    // A or B 都是 0-based
+    void add_disjunction(int a, bool na, int b, bool nb) {
+        // na is true => ~a, na is false => a
+        // nb is true => ~b, nb is false => b
         a = 2 * a ^ na;
         b = 2 * b ^ nb;
         int neg_a = a ^ 1;
