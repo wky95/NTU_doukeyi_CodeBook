@@ -1,1 +1,1 @@
-# NTHU RedCapeFlyingCat Codebook
+NTHU_No-brainers_CodeBook
