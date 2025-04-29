@@ -4,6 +4,7 @@ f = "pA"
 
 while 1:
     i = input("input: ")
+    system("clear")
     p = listdir(".")
     if i != "":
         f = i
@@ -11,7 +12,6 @@ while 1:
     if system(f"g++ {f}.cpp -std=c++17 -Wall -Wextra -Wshadow -O2 -D LOCAL -g -fsanitize=undefined,address -o {f}"):
         print("CE")
         continue
-    system("clear")
 
     for x in sorted(p):
         if f in x and ".in" in x:
