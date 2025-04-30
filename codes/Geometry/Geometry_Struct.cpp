@@ -9,14 +9,24 @@ struct point {
     T x, y;
     point() {}
     point(const T &x, const T &y) : x(x), y(y) {}
+    explicit operator point<double>() {return {x, y}; }
 
     point operator+(point b) {return {x+b.x, y+b.y}; }
     point operator-(point b) {return {x-b.x, y-b.y}; }
     point operator*(T b) {return {x*b, y*b}; }
     point operator/(T b) {return {x/b, y/b}; }
     bool operator==(point b) {return x==b.x && y==b.y; }
+
+    T operator*(point b) {return x * b.x + y * b.y; }
+    T operator^(point b) {return x * b.y - y * b.x; }
+    T abs2() {return (*this) * (*this); }
+
     // 逆時針極角排序
-    bool operator<(point &b) {return (x*b.y > b.x*y); }
+    bool side() { return (y == 0) ? (x > 0) : (y < 0); }
+    bool operator<(point &b) {
+        return side() == b.side() ?
+            (x*b.y > b.x*y) : side() < b.side();
+    }
     friend ostream& operator<<(ostream& os, point p) {
         os << "(" << p.x << ", " << p.y << ")";
         return os;
@@ -30,20 +40,14 @@ struct point {
     }
     // 判斷線段 ab, cd 是否相交
     friend bool banana(point a, point b, point c, point d) {
-        int s1 = ori(a, b, c);
-        int s2 = ori(a, b, d);
-        int s3 = ori(c, d, a);
-        int s4 = ori(c, d, b);
-        if (btw(a, b, c) || btw(a, b, d) || btw(c, d, a) || btw(c, d, b)) return 1;
-        return (s1 * s2 < 0) && (s3 * s4 < 0);
+        if (btw(a, b, c) || btw(a, b, d)
+            || btw(c, d, a) || btw(c, d, b)) return true;
+        int u = ori(a, b, c) * ori(a, b, d);
+        int v = ori(c, d, a) * ori(c, d, b);
+        return u < 0 && v < 0;
     }
-
-    T operator*(point b) {return x * b.x + y * b.y; }
-    T operator^(point b) {return x * b.y - y * b.x; }
-    T abs2() {return (*this) * (*this); }
-
     // 旋轉 Arg(b) 的角度（小心溢位）
-    point rotate(point b) {return {x*b.x - y*b.y, x*b.y + y*b.x}; }
+    point rotate(point b){return {x*b.x-y*b.y, x*b.y+y*b.x};}
 };
 
 template<typename T>
@@ -56,9 +60,9 @@ struct line {
         build();
     }
     void build() {
-		a = p1.y - p2.y;
-		b = p2.x - p1.x;
-		c = (-a*p1.x)-b*p1.y;
+        a = p1.y - p2.y;
+        b = p2.x - p1.x;
+        c = (-a*p1.x)-b*p1.y;
     }
     // 判斷點和有向直線的關係：{1:左邊,0:在線上,-1:右邊}
 	int ori(point<T> &p) {
