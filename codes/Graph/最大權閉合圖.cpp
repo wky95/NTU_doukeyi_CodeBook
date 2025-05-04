@@ -1,20 +1,15 @@
 /*
-Problem:
-    Given w = [w_0, w_1, ..., w_{n-1}] (which can be
-    either positive or negative or 0), you can choose
-    to take w_i (0 < i < n) or not, but if edge u -> v
-    exists, you must take w_v if you want to take w_u
-    (in other words, you can't take w_u without taking
-     w_v), this function returns the maximum value(> 0)
-     you can get. If you need a construction, you can
-     output the minimum cut of the S(source) side.
-Complexity:
-    MaxFlow(n, m) (Non-Biparte:O(n²m) / Bipartite:O(m√n))
+    邊 u → v 表示選 u 就要選 v (0-based)
+    保證回傳值非負
+    構造：從 S 開始 dfs，不走最小割的邊，
+          所有經過的點就是要選的那些點。
+    一般圖：O(n²m) / 二分圖：O(m√n)
 */
-int maximum_closure(vector<int> w, vector<pair<int,int>> EV) {
+template<typename U>
+U maximum_closure(vector<U> w, vector<pair<int,int>> EV) {
     int n = w.size(), S = n + 1, T = n + 2;
     Flow G(T + 5); // Graph/Dinic.cpp
-    int sum = 0;
+    U sum = 0;
     for (int i = 0; i < n; ++i) {
         if (w[i] > 0) {
             G.add(S, i, w[i]);
@@ -24,9 +19,9 @@ int maximum_closure(vector<int> w, vector<pair<int,int>> EV) {
             G.add(i, T, abs(w[i]));
         }
     }
-    for (auto &[u, v] : EV) { // You should make sure that INF > Σ|w_i|
+    for (auto &[u, v] : EV) { // 請務必確保 INF > Σ|w_i|
         G.add(u, v, INF);
     }
-    int cut = G.flow(S, T);
+    U cut = G.flow(S, T);
     return sum - cut;
 }
