@@ -1,25 +1,33 @@
+using ld = double;
+
 // 判斷數值正負：{1:正數,0:零,-1:負數}
 int sign(long long x) {return (x >= 0) ? ((bool)x) : -1; }
-int sign(double x) {
-    return (abs(x) < 1e-9) ? 0 : (x > 0 ? 1 : -1);
-}
+int sign(ld x) {return (abs(x) < 1e-9) ? 0 : (x>0 ? 1 : -1);}
 
 template<typename T>
 struct point {
     T x, y;
     point() {}
     point(const T &x, const T &y) : x(x), y(y) {}
+    explicit operator point<ld>() {return point<ld>(x, y); }
 
     point operator+(point b) {return {x+b.x, y+b.y}; }
     point operator-(point b) {return {x-b.x, y-b.y}; }
     point operator*(T b) {return {x*b, y*b}; }
     point operator/(T b) {return {x/b, y/b}; }
     bool operator==(point b) {return x==b.x && y==b.y; }
+
+    T operator*(point b) {return x * b.x + y * b.y; }
+    T operator^(point b) {return x * b.y - y * b.x; }
+
     // 逆時針極角排序
-    bool operator<(point &b) {return (x*b.y > b.x*y); }
+    bool side() { return (y == 0) ? (x > 0) : (y < 0); }
+    bool operator<(point &b) {
+        return side() == b.side() ?
+            (x*b.y > b.x*y) : side() < b.side();
+    }
     friend ostream& operator<<(ostream& os, point p) {
-        os << "(" << p.x << ", " << p.y << ")";
-        return os;
+        return os << "(" << p.x << ", " << p.y << ")";
     }
     // 判斷 ab 到 ac 的方向：{1:逆時鐘,0:重疊,-1:順時鐘}
     friend int ori(point a, point b, point c) {
@@ -30,20 +38,19 @@ struct point {
     }
     // 判斷線段 ab, cd 是否相交
     friend bool banana(point a, point b, point c, point d) {
-        int s1 = ori(a, b, c);
-        int s2 = ori(a, b, d);
-        int s3 = ori(c, d, a);
-        int s4 = ori(c, d, b);
-        if (btw(a, b, c) || btw(a, b, d) || btw(c, d, a) || btw(c, d, b)) return 1;
-        return (s1 * s2 < 0) && (s3 * s4 < 0);
+        if (btw(a, b, c) || btw(a, b, d)
+            || btw(c, d, a) || btw(c, d, b)) return true;
+        int u = ori(a, b, c) * ori(a, b, d);
+        int v = ori(c, d, a) * ori(c, d, b);
+        return u < 0 && v < 0;
     }
-
-    T operator*(point b) {return x * b.x + y * b.y; }
-    T operator^(point b) {return x * b.y - y * b.x; }
-    T abs2() {return (*this) * (*this); }
-
     // 旋轉 Arg(b) 的角度（小心溢位）
-    point rotate(point b) {return {x*b.x - y*b.y, x*b.y + y*b.x}; }
+    point rotate(point b){return {x*b.x-y*b.y, x*b.y+y*b.x};}
+    // 回傳極座標角度，值域：[-π, +π]
+    friend ld Arg(point b) {
+        return (b.x != 0 || b.y != 0) ? atan2(b.y, b.x) : 0;
+    }
+    friend T abs2(point b) {return b * b; }
 };
 
 template<typename T>
@@ -56,24 +63,24 @@ struct line {
         build();
     }
     void build() {
-		a = p1.y - p2.y;
-		b = p2.x - p1.x;
-		c = (-a*p1.x)-b*p1.y;
+        a = p1.y - p2.y;
+        b = p2.x - p1.x;
+        c = (-a*p1.x)-b*p1.y;
     }
     // 判斷點和有向直線的關係：{1:左邊,0:在線上,-1:右邊}
-	int ori(point<T> &p) {
-		return sign((p2-p1) ^ (p-p1));
-	}
-	// 判斷直線斜率是否相同
-	bool parallel(line &l) {
-		return ((p1-p2) ^ (l.p1-l.p2)) == 0;
-	}
-	// 兩直線交點
-    point<long double> line_intersection(line &l) {
-        using P = point<long double>;
-		point<T> a = p2-p1, b = l.p2-l.p1, s = l.p1-p1;
-		return P(p1.x,p1.y) + P(a.x,a.y) * (((long double)(s^b)) / (a^b));
-	}
+    int ori(point<T> &p) {
+        return sign((p2-p1) ^ (p-p1));
+    }
+    // 判斷直線斜率是否相同
+    bool parallel(line &l) {
+        return ((p1-p2) ^ (l.p1-l.p2)) == 0;
+    }
+    // 兩直線交點
+    point<ld> line_intersection(line &l) {
+        using P = point<ld>;
+        point<T> u = p2-p1, v = l.p2-l.p1, s = l.p1-p1;
+        return P(p1) + P(u) * ((ld(s^v)) / (u^v));
+    }
 };
 
 template<typename T>
@@ -259,12 +266,10 @@ struct polygon {
         }
     }
     friend int halfplane_intersection(vector<line<T>> &s, polygon<T> &P) {
-        #define neg(p) ((p.y == 0 ? p.x : p.y) < 0)
         auto angle_cmp = [&](line<T> &A, line<T> &B) {
             point<T> a = A.p2-A.p1, b = B.p2-B.p1;
-            return neg(a) < neg(b) || (neg(a) == neg(b) && (a^b) > 0);
+            return (a < b);
         };
-        #undef neg
         sort(s.begin(), s.end(), angle_cmp); // 線段左側為該線段半平面
         int L, R, n = s.size();
         vector<point<T>> px(n);
@@ -278,7 +283,7 @@ struct polygon {
                 --R;
                 if(q[R].ori(s[i].p1) > 0) q[R] = s[i];
             }
-            if(L < R) px[R-1] = q[R-1].line_intersection(q[R]);
+            if(L<R) px[R-1] = q[R-1].line_intersection(q[R]);
         }
         while(L < R && q[L].ori(px[R-1]) <= 0) --R;
         P.v.clear();
