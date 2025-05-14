@@ -58,11 +58,18 @@ def cmp(x):
         val = -1
     return [val, x]
 
+def cmp2(x):
+    val = 0
+    if x[1] == "Default Code":
+        val = -2
+    elif x[1] == "Run":
+        val = -1
+    return [val, x]
 
 def texCodeGen(out, FileDict):
     for key in sorted(FileDict.keys(), key=cmp):
         out.write("\\section{" + key + "}\n")
-        for file_extension, name, path in sorted(FileDict[key]):
+        for file_extension, name, path in sorted(FileDict[key], key=cmp2):
             hash_value = get_hash(path) if file_extension == ".cpp" else ""
             if file_extension == ".cpp" and hash_value:
                 out.write(
