@@ -1,6 +1,7 @@
 import sys
-from os import walk, system
+from os import walk, system, popen
 from os.path import join, split, splitext
+import shlex
 
 sys.stdin.reconfigure(encoding="utf-8")
 sys.stdout.reconfigure(encoding="utf-8")
@@ -24,6 +25,12 @@ def toLatex(string):
 def replace(string):
     string = string.replace("\\", "/")
     return string
+
+
+def get_hash(file_path):
+    safe_path = shlex.quote(file_path)
+    cmd = f"cat {safe_path} | cpp -dD -P -fpreprocessed | tr -d '[:space:]' | md5sum | cut -c-6"
+    return popen(cmd).read().strip()
 
 
 def PrepareFileDict(CurPath):
@@ -56,15 +63,27 @@ def texCodeGen(out, FileDict):
     for key in sorted(FileDict.keys(), key=cmp):
         out.write("\\section{" + key + "}\n")
         for file_extension, name, path in sorted(FileDict[key]):
-            out.write(
-                "  \\"
-                + RequireOptionDict[file_extension]
-                + "{"
-                + name
-                + "}{"
-                + path
-                + "}\n"
-            )
+            hash_value = get_hash(path) if file_extension == ".cpp" else ""
+            if file_extension == ".cpp" and hash_value:
+                out.write(
+                    "  \\includecppwithhash{"
+                    + name
+                    + "}{"
+                    + path
+                    + "}{"
+                    + hash_value
+                    + "}\n"
+                )
+            else:
+                out.write(
+                    "  \\"
+                    + RequireOptionDict[file_extension]
+                    + "{"
+                    + name
+                    + "}{"
+                    + path
+                    + "}\n"
+                )
 
 
 if __name__ == "__main__":
@@ -78,6 +97,8 @@ if __name__ == "__main__":
     with open("list.tex", "w", encoding="utf-8") as fout:
         texCodeGen(fout, FileDict)
 
-    command = "xelatex -synctex=1 -interaction=nonstopmode --extra-mem-bot=10000000 Codebook.tex"
+    print("[3] Compiling LaTeX...")
+    command = "xelatex -quiet -synctex=1 -interaction=nonstopmode --extra-mem-bot=10000000 Codebook.tex > /dev/null 2>&1"
     system(command)
     system(command)
+    print("[#] Done!")
