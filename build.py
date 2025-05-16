@@ -143,8 +143,11 @@ if __name__ == "__main__":
     print("[1] Get Codes...")
 
     FileDict = PrepareFileDict("./codes")
-
-    print("    There are", len(FileDict), "file(s)")
+    
+    total_files = 0
+    for key in FileDict.keys():
+        total_files += len(FileDict[key])
+    print("    There are", len(FileDict), "folder"+ "(s)" * min(len(FileDict) - 1, 1) + " and", total_files, "file"+ "(s)" * min(total_files - 1, 1))
     print("[2] Prepare Codes...")
     with open("list.tex", "w", encoding="utf-8") as fout:
         texCodeGen(fout, FileDict)
