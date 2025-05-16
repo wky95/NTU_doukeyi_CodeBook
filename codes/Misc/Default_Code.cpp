@@ -2,9 +2,6 @@
 using namespace std;
 #define int long long
 
-const int MAX_N = 5e5 + 10;
-const int INF = 2e18;
-
 void solve(){
 
 }
