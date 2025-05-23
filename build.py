@@ -72,7 +72,9 @@ def cmp(x):
 
 def cmp2(x):
     val = 0
-    if x[1] == "Default Code":
+    if x[1] == "Note":
+        val = -3
+    elif x[1] == "Default Code":
         val = -2
     elif x[1] == "Run":
         val = -1
