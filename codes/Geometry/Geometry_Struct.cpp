@@ -101,7 +101,8 @@ struct polygon {
         for (int t = 0; t < 2; ++t){
             int sz = hull.size();
             for (auto &i:v) {
-                while (hull.size() >= sz+2 && ori(hull[hull.size()-2], hull.back(), i) < simple) {
+                while (hull.size() >= sz+2 && ori(hull[hull.
+                      size()-2], hull.back(), i) < simple) {
                     hull.pop_back();
                 }
                 hull.push_back(i);
