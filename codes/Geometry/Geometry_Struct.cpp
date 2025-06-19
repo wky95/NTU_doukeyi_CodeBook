@@ -96,11 +96,13 @@ struct polygon {
         simple = (bool)simple;
         sort(v.begin(), v.end(), cmp);
         v.resize(unique(v.begin(), v.end()) - v.begin());
+        /// 警告：v.size() 是 1 的時候會回傳空的凸包 ///
         vector<point<T>> hull;
         for (int t = 0; t < 2; ++t){
             int sz = hull.size();
             for (auto &i:v) {
-                while (hull.size() >= sz+2 && ori(hull[hull.size()-2], hull.back(), i) < simple) {
+                while (hull.size() >= sz+2 && ori(hull[hull.
+                      size()-2], hull.back(), i) < simple) {
                     hull.pop_back();
                 }
                 hull.push_back(i);
@@ -147,6 +149,7 @@ struct polygon {
 //  凸包專用的環狀二分搜，回傳 0-based index
     int cycle_search(auto &f) {
         int n = v.size(), l = 0, r = n;
+        if (n == 1) return 0;
         bool rv = f(1, 0);
         while (r - l > 1) {
             int m = (l + r) / 2;
