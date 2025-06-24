@@ -1,15 +1,25 @@
 // ax + by = c
-int extgcd(int a, int b, int c, int &x, int &y) {
+int extgcd_abc(int a, int b, int c, int &x, int &y) {
     if (b == 0) {
         if (c % a) return INF;
         x = c / a, y = 0;
         return abs(a);
     }
     int x1, y1;
-    int g = extgcd(b, a % b, c, x1, y1);
+    int g = extgcd_abc(b, a % b, c, x1, y1);
     x = y1;
     y = x1 - a / b * y1;
     return g;
+}
+// Sorry that I don't know how to merge two functions
+int extgcd(int a, int b, int &x, int &y) {
+    if (b == 0) {
+        x = 1, y = 0;
+        return a;
+    }
+    int ret = extgcd(b, a % b, y, x);
+    y -= a / b * x;
+    return ret;
 }
 
 // 有 n 個式子，求解 x ≡ a_i (mod m_i)
@@ -50,7 +60,7 @@ pair<int, int> div(int a, int b, int m) {
     if (a < 0) { a = -a; flag *= -1; }
     if (b < 0) { b = -b; flag *= -1; }
     int t = -1, k = -1;
-    int res = extgcd(b, m, a, t, k);
+    int res = extgcd_abc(b, m, a, t, k);
     if (res == INF) return {INF, INF};
     m = abs(m / res);
     t = t * flag;
