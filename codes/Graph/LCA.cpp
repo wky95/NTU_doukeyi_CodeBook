@@ -1,14 +1,10 @@
+// 1-based，可以支援森林，0 是超級源點，所有樹都要跟他建邊
 struct Tree{
     int N, M = 0, H;
-    vector<vector<int>> G;
-    vector<vector<int>> LCA;
-    vector<int> parent;
-    vector<int> dep;
+    vector<int> parent, dep;
+    vector<vector<int>> G, LCA;
 
-    Tree(int _N) : N(_N), H(__lg(_N)+1){
-        G.resize(N);
-        parent.resize(N, -1);
-        dep.resize(N, 0);
+    Tree(int _N) : N(_N+1), H(__lg(N)+1), parent(N, -1), dep(N), G(N){
         LCA.resize(H, vector<int>(N, 0));
     }
 
@@ -18,7 +14,7 @@ struct Tree{
         G[v].push_back(u);
     }
 
-    void dfs(int now, int pre){ // root 的 pre 是自己
+    void dfs(int now = 0, int pre = 0){
         dep[now] = dep[pre]+1;
         parent[now] = pre;
         for (auto x : G[now]){
@@ -28,7 +24,7 @@ struct Tree{
     }
 
     void build_LCA(int root = 0){
-        dfs(root, root);
+        dfs();
         for (int i=0 ; i<N ; i++) LCA[0][i] = parent[i];
         for (int i=1 ; i<H ; i++){
             for (int j=0 ; j<N ; j++){
