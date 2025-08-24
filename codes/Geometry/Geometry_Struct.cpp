@@ -10,7 +10,7 @@ struct point {
     point() {}
     point(const T &x, const T &y) : x(x), y(y) {}
     explicit operator point<ld>() {return point<ld>(x, y); }
-
+    // A [6357c4]
     point operator+(point b) {return {x+b.x, y+b.y}; }
     point operator-(point b) {return {x-b.x, y-b.y}; }
     point operator*(T b) {return {x*b, y*b}; }
@@ -19,10 +19,10 @@ struct point {
 
     T operator*(point b) {return x * b.x + y * b.y; }
     T operator^(point b) {return x * b.y - y * b.x; }
-
+    // B [c415da]
     // 逆時針極角排序
-    bool side() { return (y == 0) ? (x > 0) : (y < 0); }
-    bool operator<(point &b) {
+    bool side() const{return (y == 0) ? (x > 0) : (y < 0); }
+    bool operator<(const point &b) const {
         return side() == b.side() ?
             (x*b.y > b.x*y) : side() < b.side();
     }
@@ -55,6 +55,7 @@ struct point {
 
 template<typename T>
 struct line {
+    /*--------------- C [683239] ---------------*/
     point<T> p1, p2;
     // ax + by + c = 0
     T a, b, c; // |a|, |b| ≤ 2C, |c| ≤ 8C²
@@ -66,7 +67,7 @@ struct line {
         a = p1.y - p2.y;
         b = p2.x - p1.x;
         c = (-a*p1.x)-b*p1.y;
-    }
+    } // C [683239]
     // 判斷點和有向直線的關係：{1:左邊,0:在線上,-1:右邊}
     int ori(point<T> &p) {
         return sign((p2-p1) ^ (p-p1));
@@ -111,7 +112,7 @@ struct polygon {
             reverse(v.begin(), v.end());
         }
         swap(hull, v);
-    }
+    } // D [2b7549]
 //  可以在有 n 個點的簡單多邊形內，用 O(n) 判斷一個點：
 //  {1 : 在多邊形內, 0 : 在多邊形上, -1 : 在多邊形外}
     int in_polygon(point<T> a){
@@ -126,7 +127,7 @@ struct polygon {
         }
 
         return cnt%2 ? 1 : -1;
-    }
+    } // E [f11340]
 /// 警告：以下所有凸包專用的函式都只接受逆時針排序且任三點不共線的凸包 ///
 //  可以在有 n 個點的凸包內，用 O(log n) 判斷一個點：
 //  {1 : 在凸包內, 0 : 在凸包邊上, -1 : 在凸包外}
@@ -145,7 +146,7 @@ struct polygon {
         int k = ori(v[l], v[r], p);
         if (k <= 0) return k;
         return 1;
-    }
+    } // F [e64f1e]
 //  凸包專用的環狀二分搜，回傳 0-based index
     int cycle_search(auto &f) {
         int n = v.size(), l = 0, r = n;
@@ -157,7 +158,7 @@ struct polygon {
             else l = m;
         }
         return f(l, r % n) ? l : r % n;
-    }
+    } // G [fe2f51]
 //  可以在有 n 個點的凸包內，用 O(log n) 判斷一條直線：
 //  {1 : 穿過凸包, 0 : 剛好切過凸包, -1 : 沒碰到凸包}
     int line_cut_convex(line<T> L) {
@@ -172,7 +173,7 @@ struct polygon {
         T x = gt(1), y = gt(-1);
         if (L.c < x || y < L.c) return -1;
         return not (L.c == x || L.c == y);
-    }
+    } // H [b6a4c8]
 //  可以在有 n 個點的凸包內，用 O(log n) 判斷一個線段：
 //  {1 : 存在一個凸包上的邊可以把這個線段切成兩半,
 //   0 : 有碰到凸包但沒有任何凸包上的邊可以把它切成兩半,
@@ -206,7 +207,7 @@ struct polygon {
             return -(ori(v[x], v[(x + 1) % n], L.p1) * ori(v[x], v[(x + 1) % n], L.p2));
         };
         return max(g(i, j - i), g(j, n - (j - i)));
-    }
+    } // I [b4f073]
 //  可以在有 n 個點的凸包內，用 O(log n) 判斷一個線段：
 //  {1 : 線段上存在某一點位於凸包內部（邊上不算）,
 //   0 : 線段上存在某一點碰到凸包的邊但線段上任一點均不在凸包內部,
@@ -241,7 +242,7 @@ struct polygon {
         };
         int ret = max(g(i, j - i), g(j, n - (j - i)));
         return (ret == 0) ? (in_convex(L.p1) == 0 && in_convex(L.p2) == 0) : ret;
-    }
+    } // J [5f45ca]
 //  回傳點過凸包的兩條切線的切點的 0-based index（不保證兩條切線的順逆時針關係）
     pair<int,int> convex_tangent_point(point<T> p) {
         int n = v.size(), z = -1, edg = -1;
@@ -267,7 +268,7 @@ struct polygon {
         else {
             return {x, y};
         }
-    }
+    } // K [a6f66b]
     friend int halfplane_intersection(vector<line<T>> &s, polygon<T> &P) {
         auto angle_cmp = [&](line<T> &A, line<T> &B) {
             point<T> a = A.p2-A.p1, b = B.p2-B.p1;
@@ -294,5 +295,25 @@ struct polygon {
         px[R] = q[R].line_intersection(q[L]);
         for(int i = L; i <= R; ++i) P.v.push_back(px[i]);
         return R - L + 1;
+    } // L [102d48]
+};
+
+struct Cir {
+    point<ld> o; ld r;
+    friend ostream& operator<<(ostream& os, Cir c) {
+        return os << "(x" << "+-"[c.o.x >= 0] << abs(c.o.x) << ")^2 + (y" << "+-"[c.o.y >= 0] << abs(c.o.y) << ")^2 = " << c.r * c.r;
     }
+    bool covers(Cir b) {
+        return sqrt((ld)abs2(o - b.o)) + b.r <= r;
+    }
+    vector<point<ld>> Cir_intersect(Cir c) {
+        ld d2 = abs2(o - c.o), d = sqrt(d2);
+        if (d < max(r, c.r) - min(r, c.r) || d > r + c.r) return {};
+        auto sqdf = [&](ld x, ld y) { return x*x - y*y; };
+        point<ld> u = (o + c.o) / 2 + (o - c.o) * (sqdf(c.r, r) / (2 * d2));
+        ld A = sqrt(sqdf(r + d, c.r) * sqdf(c.r, d - r));
+        point<ld> v = (c.o - o).rotate({0,1}) * A / (2 * d2);
+        if (sign(v.x) == 0 && sign(v.y) == 0) return {u};
+        return {u - v, u + v};
+    } // M [330a1c]
 };

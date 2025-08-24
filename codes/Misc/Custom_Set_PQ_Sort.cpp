@@ -1,4 +1,4 @@
-// 所有自訂的結構體，務必檢查央等的 case，給所有元素一個排序的依據
+// 所有自訂的結構體，務必檢查相等的 case，給所有元素一個排序的依據
 struct my_struct{
     int val;
     my_struct(int _val) : val(_val) {}
