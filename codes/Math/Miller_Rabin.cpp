@@ -1,4 +1,4 @@
-// O(log n)
+// O(k log^3 n), k = llsprp.size()
 typedef Uint unsigned long long;
 Uint modmul(Uint a, Uint b, Uint m) {
     int ret = a*b - m*(Uint)((long double)a*b/m);
@@ -8,9 +8,7 @@ Uint modmul(Uint a, Uint b, Uint m) {
 int qp(int b, int p, int m){
     int ret = 1;
     for ( ; p ; p>>=1){
-        if (p&1){
-            ret = modmul(ret, b, m);
-        }
+        if (p&1) ret = modmul(ret, b, m);
         b = modmul(b, b, m);
     }
     return ret;
@@ -18,7 +16,7 @@ int qp(int b, int p, int m){
 
 // ed23aa
 vector<int> llsprp = {2, 325, 9375, 28178, 450775, 9780504, 1795265022};
-bool isprime(int n, vector<int> sprp = llsprp){
+bool is_prime(int n, vector<int> sprp = llsprp){
     if (n==2) return 1;
     if (n<2 || n%2==0) return 0;
 
@@ -38,8 +36,8 @@ bool isprime(int n, vector<int> sprp = llsprp){
         }
 
         if (x==n-1) continue;
-        return 0;
+        return false;
     }
 
-    return 1;
+    return true;
 }
