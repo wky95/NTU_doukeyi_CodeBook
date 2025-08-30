@@ -107,7 +107,7 @@ struct polygon {
         simple = (bool)simple;
         sort(v.begin(), v.end(), cmp);
         v.resize(unique(v.begin(), v.end()) - v.begin());
-        /// 警告：v.size() 是 1 的時候會回傳空的凸包 ///
+        if (v.size() <= 1) return;
         vector<point<T>> hull;
         for (int t = 0; t < 2; ++t){
             int sz = hull.size();
@@ -122,7 +122,7 @@ struct polygon {
             reverse(v.begin(), v.end());
         }
         swap(hull, v);
-    } // F [2b7549]
+    } // F [2bb3ef]
 //  可以在有 n 個點的簡單多邊形內，用 O(n) 判斷一個點：
 //  {1 : 在多邊形內, 0 : 在多邊形上, -1 : 在多邊形外}
     int in_polygon(point<T> a){
