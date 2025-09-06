@@ -31,15 +31,14 @@ struct pt3 {
     }
 };
 
-// q : 面積向量、a, b, c；三角形在 vector 裡面的 index
 template<typename T>
 struct face {
-    int a, b, c; // index
-    pt3<T> q;
+    int a, b, c; // 三角形在 vector 裡面的 index
+    pt3<T> q;    // 面積向量（朝外）
 };
 
 /// 警告；v 在過程中可能被修改，回傳的 face 以修改後的為準
-// O(n²)
+// O(n²)，最多只有 2n-4 個面
 // 當凸包退化時會回傳空的凸包，否則回傳凸包上的每個面
 template<typename T>
 vector<face<T>> hull3(vector<pt3<T>> &v) {
@@ -95,3 +94,4 @@ vector<face<T>> hull3(vector<pt3<T>> &v) {
     }
     return f;
 }
+
