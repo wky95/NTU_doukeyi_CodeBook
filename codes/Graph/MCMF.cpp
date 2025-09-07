@@ -9,15 +9,15 @@ struct Flow {
  
  	// v->u, capcity: c, cost: k
 	void add(int v, int u, int c, int k){
-		G[v].push_back({u, c, k, SZ(G[u])});
-		G[u].push_back({v, 0, -k, SZ(G[v])-1});
+		G[v].push_back({u, c, k, G[u].size()});
+		G[u].push_back({v, 0, -k, G[v].size()-1});
 	}
  
 	// 3701d6
 	int spfa(int s, int t){
-		fill(ALL(par), -1);
-		vector<int> dis(SZ(par), INF);
-		vector<bool> in_q(SZ(par), false);
+		fill(par.begin(), par.end(), -1);
+		vector<int> dis(par.size(), INF);
+		vector<bool> in_q(par.size(), false);
 		queue<int> Q;
 		dis[s] = 0;
 		in_q[s] = true;
@@ -28,7 +28,7 @@ struct Flow {
 			Q.pop();
 			in_q[v] = false;
  
-			for (int i=0 ; i<SZ(G[v]) ; i++){
+			for (int i=0 ; i<G[v].size() ; i++){
 				auto [u, rc, k, rv] = G[v][i];
 				if (rc>0 && dis[v]+k<dis[u]){
 					dis[u] = dis[v]+k;
