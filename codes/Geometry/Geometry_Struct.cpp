@@ -10,7 +10,7 @@ struct point {
     point() {}
     point(const T &x, const T &y) : x(x), y(y) {}
     explicit operator point<ld>() {return point<ld>(x, y); }
-    // A [6357c4]
+    // A [6357c4], Line 9 ~ 13
     point operator+(point b) {return {x+b.x, y+b.y}; }
     point operator-(point b) {return {x-b.x, y-b.y}; }
     point operator*(T b) {return {x*b, y*b}; }
@@ -19,7 +19,7 @@ struct point {
 
     T operator*(point b) {return x * b.x + y * b.y; }
     T operator^(point b) {return x * b.y - y * b.x; }
-    // B [c415da]
+    // B [c415da], Line 14 ~ 22
     // 逆時針極角排序
     bool side() const{return (y == 0) ? (x > 0) : (y < 0); }
     bool operator<(const point &b) const {
@@ -43,7 +43,7 @@ struct point {
         int u = ori(a, b, c) * ori(a, b, d);
         int v = ori(c, d, a) * ori(c, d, b);
         return u < 0 && v < 0;
-    } // C [09fd7c]
+    } // C [09fd7c], only this function
     // 判斷 "射線 ab" 與 "線段 cd" 是否相交
     friend bool rayHitSeg(point a,point b,point c,point d) {
         if (a == b) return btw(c, d, a); // Special case
@@ -53,7 +53,7 @@ struct point {
         point u = b - a, v = d - c, s = c - a;
         return sign(s ^ v) * sign(u ^ v) >= 0 && sign(s ^ u)
              * sign(u ^ v) >= 0 && abs(s ^ u) <= abs(u ^ v);
-    } // D [db541a]
+    } // D [db541a], only this function
     // 旋轉 Arg(b) 的角度（小心溢位）
     point rotate(point b){return {x*b.x-y*b.y, x*b.y+y*b.x};}
     // 回傳極座標角度，值域：[-π, +π]
@@ -65,7 +65,6 @@ struct point {
 
 template<typename T>
 struct line {
-    /*--------------- E [683239] ---------------*/
     point<T> p1, p2;
     // ax + by + c = 0
     T a, b, c; // |a|, |b| ≤ 2C, |c| ≤ 8C²
@@ -77,7 +76,7 @@ struct line {
         a = p1.y - p2.y;
         b = p2.x - p1.x;
         c = (-a*p1.x)-b*p1.y;
-    } // E [683239]
+    } // E [683239], Line 68 ~ 79
     // 判斷點和有向直線的關係：{1:左邊,0:在線上,-1:右邊}
     int ori(point<T> &p) {
         return sign((p2-p1) ^ (p-p1));
@@ -122,7 +121,7 @@ struct polygon {
             reverse(v.begin(), v.end());
         }
         swap(hull, v);
-    } // F [2bb3ef]
+    } // F [2bb3ef], only this function
 //  可以在有 n 個點的簡單多邊形內，用 O(n) 判斷一個點：
 //  {1 : 在多邊形內, 0 : 在多邊形上, -1 : 在多邊形外}
     int in_polygon(point<T> a){
@@ -137,7 +136,7 @@ struct polygon {
         }
 
         return cnt%2 ? 1 : -1;
-    } // G [f11340]
+    } // G [f11340], only this function
 /// 警告：以下所有凸包專用的函式都只接受逆時針排序且任三點不共線的凸包 ///
 //  可以在有 n 個點的凸包內，用 O(log n) 判斷一個點：
 //  {1 : 在凸包內, 0 : 在凸包邊上, -1 : 在凸包外}
@@ -156,7 +155,7 @@ struct polygon {
         int k = ori(v[l], v[r], p);
         if (k <= 0) return k;
         return 1;
-    } // H [e64f1e]
+    } // H [e64f1e], only this function
 //  凸包專用的環狀二分搜，回傳 0-based index
     int cycle_search(auto &f) {
         int n = v.size(), l = 0, r = n;
@@ -168,7 +167,7 @@ struct polygon {
             else l = m;
         }
         return f(l, r % n) ? l : r % n;
-    } // I [fe2f51]
+    } // I [fe2f51], only this function
 //  可以在有 n 個點的凸包內，用 O(log n) 判斷一條直線：
 //  {1 : 穿過凸包, 0 : 剛好切過凸包, -1 : 沒碰到凸包}
     int line_cut_convex(line<T> L) {
@@ -183,7 +182,7 @@ struct polygon {
         T x = gt(1), y = gt(-1);
         if (L.c < x || y < L.c) return -1;
         return not (L.c == x || L.c == y);
-    } // J [b6a4c8]
+    } // J [b6a4c8], only this function
 //  可以在有 n 個點的凸包內，用 O(log n) 判斷一個線段：
 //  {1 : 存在一個凸包上的邊可以把這個線段切成兩半,
 //   0 : 有碰到凸包但沒有任何凸包上的邊可以把它切成兩半,
@@ -217,7 +216,7 @@ struct polygon {
             return -(ori(v[x], v[(x + 1) % n], L.p1) * ori(v[x], v[(x + 1) % n], L.p2));
         };
         return max(g(i, j - i), g(j, n - (j - i)));
-    } // K [b4f073]
+    } // K [b4f073], only this function
 //  可以在有 n 個點的凸包內，用 O(log n) 判斷一個線段：
 //  {1 : 線段上存在某一點位於凸包內部（邊上不算）,
 //   0 : 線段上存在某一點碰到凸包的邊但線段上任一點均不在凸包內部,
@@ -252,7 +251,7 @@ struct polygon {
         };
         int ret = max(g(i, j - i), g(j, n - (j - i)));
         return (ret == 0) ? (in_convex(L.p1) == 0 && in_convex(L.p2) == 0) : ret;
-    } // L [5f45ca]
+    } // L [5f45ca], only this function
 //  回傳點過凸包的兩條切線的切點的 0-based index（不保證兩條切線的順逆時針關係）
     pair<int,int> convex_tangent_point(point<T> p) {
         int n = v.size(), z = -1, edg = -1;
@@ -278,7 +277,7 @@ struct polygon {
         else {
             return {x, y};
         }
-    } // M [a6f66b]
+    } // M [a6f66b], only this function
     friend int halfplane_intersection(vector<line<T>> &s, polygon<T> &P) {
         auto angle_cmp = [&](line<T> &A, line<T> &B) {
             point<T> a = A.p2-A.p1, b = B.p2-B.p1;
@@ -305,7 +304,7 @@ struct polygon {
         px[R] = q[R].line_intersection(q[L]);
         for(int i = L; i <= R; ++i) P.v.push_back(px[i]);
         return R - L + 1;
-    } // N [102d48]
+    } // N [102d48], only this function
 };
 
 struct Cir {
@@ -325,7 +324,7 @@ struct Cir {
         point<ld> v = (c.o - o).rotate({0,1}) * A / (2 * d2);
         if (sign(v.x) == 0 && sign(v.y) == 0) return {u};
         return {u - v, u + v};
-    } // O [330a1c]
+    } // O [330a1c], only this function
     auto point_tangent(point<ld> p) {
         vector<point<ld>> res;
         ld d_sq = abs2(p - o);
@@ -339,5 +338,5 @@ struct Cir {
             res.pb(v - u);
         }
         return res;
-    } // P [0067e6]
+    } // P [0067e6], only this function
 };
