@@ -4,6 +4,7 @@ struct SuffixArray {
     vector<int> sa, lcp;
 
     // 69ced9
+    // lim 要調整成字元集大小，_s 不可以有 0
     SuffixArray(string _s, int lim = 256) {
         s = _s;
         int n = s.size()+1, k = 0, a, b;
@@ -75,8 +76,7 @@ struct SuffixArray {
         if (res<len_1 && res<len_2){
             return s[l1+res]-s[l2+res];
         }else if (len_1==res && len_2==res){
-            // 如果不需要以 index 作為次要排序參數，這裡要回傳 0
-            return l1-l2;
+            return 0;
         }else{
             return len_1==res ? -1 : 1;
         }
