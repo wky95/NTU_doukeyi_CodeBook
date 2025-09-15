@@ -28,3 +28,19 @@ def write_dot(x, y, text, diff=1): # diff = 文字的偏移
 # usage
 draw_line(*a[i], *(a[i-1]))
 write_dot(*a[i], str(a[i]))
+
+# OOP
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __add__(self, o): # use dir(int) to know operator name
+        return Point(self.x+o.x, self.y+o.y)
+    
+    @property
+    def distance(self):
+        return (self.x**2 + self.y**2)**(0.5)
+    
+a = Point(3, 4)
+print(a.distance)
