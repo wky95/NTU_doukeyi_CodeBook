@@ -1,10 +1,10 @@
 #include <bits/stdc++.h>
 using namespace std;
 #define int long long
-#define debug(HEHE...) std::cerr << #HEHE << " = ", dout(HEHE)
-void dout() { std::cerr << "\n"; }
-template <typename T, typename... U>
-void dout(T t, U... u) { std::cerr << t << ' ', dout(u...); }
+#define debug(a...) cerr << #a << " = ", dout(a)
+void dout() { cerr << "\n"; }
+template <typename A, typename... B>
+void dout(A a, B... b) { cerr << a << ' ', dout(b...); }
 
 void solve(){
 
