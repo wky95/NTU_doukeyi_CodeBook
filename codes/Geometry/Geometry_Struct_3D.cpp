@@ -93,5 +93,6 @@ vector<face<T>> hull3(vector<pt3<T>> &v) {
         f.insert(f.end(), all(f2));
     }
     return f;
-}
+} // 15ef50
+
 
