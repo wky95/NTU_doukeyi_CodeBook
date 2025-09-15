@@ -44,3 +44,9 @@ class Point:
     
 a = Point(3, 4)
 print(a.distance)
+
+# Fraction
+from fractions import Fraction
+a = Fraction(Decimal(1.1))
+a.numerator # 分子
+a.denominator # 分母
