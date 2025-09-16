@@ -1,35 +1,35 @@
-const int MAXN = 5e5 + 5;
-struct ac_automation {
+struct ACAutomation{
+    vector<vector<int>> go;
+    vector<int> fail;
+    int sz = 0;
 
-    int go[MAXN][26], fail[MAXN], is_end[MAXN];
-    int sz;
+    ACAutomation(int n) : go(n, vector<int>(26)), fail(n) {}
 
-    void add(string s) {
+    void add(string s){
         int now = 0;
-        for (char c : s) {
-            if (!go[now][c - 'a']) 
-                go[now][c - 'a'] = ++sz;
-            now = go[now][c - 'a'];
+        for (char c : s){
+            if (!go[now][c-'a']) go[now][c-'a'] = ++sz;
+            now = go[now][c-'a'];
         }
-        is_end[now]++;
     }
-    vector<int> que;
-    void build() {
-        que.pb(0);
-        for (int i = 0; i < ssize(que); i++) {
-            auto u = que[i];
-            FOR (c, 0, 25) {
-                if (go[u][c]) {
-                    int v = go[u][c];
-                    fail[v] = !u ? 0 : go[fail[u]][c];
-                    is_end[v] += is_end[fail[v]];
-                    que.pb(v);
-                }
-                else {
-                    go[u][c] = go[fail[u]][c];
-                }
+
+    void build(){
+        queue<int> que;
+        for (int i=0 ; i<26 ; i++){
+            if (go[0][i]) que.push(go[0][i]);
+        }
+        while (que.size()){
+            int u = que.front();
+            que.pop();
+            for (int i=0 ; i<26 ; i++){
+                if (go[u][i]){
+                    fail[go[u][i]] = go[fail[u]][i];
+                    que.push(go[u][i]);
+                }else go[u][i] = go[fail[u]][i];
             }
         }
     }
 
-} AC;
+    int solve(string s){
+    }
+};
