@@ -20,6 +20,22 @@ RequireOptionDict = {
     ".vimrc": "includevim",
 }
 
+# ANSI 顏色碼
+class Colors:
+    RESET = '\033[0m'
+    ORANGE = '\033[33m'    # 橘色 - 警告訊息
+
+def colored_warning(message):
+    """印出橘色警告訊息"""
+    if sys.platform == "win32":
+        # Windows 可能不支援 ANSI 顏色，嘗試啟用
+        system("color")
+    print(f"{Colors.ORANGE}    [Warning]: {message}{Colors.RESET}")
+
+def normal_print(message):
+    """印出普通訊息（使用預設終端顏色）"""
+    print(message)
+
 
 def toLatex(string):
     string = string.replace("_", " ")
@@ -55,6 +71,7 @@ def PrepareFileDict(CurPath):
             fullpath = join(root, filename)
             name, file_extension = splitext(filename)
             if file_extension not in RequireOptionDict:
+                colored_warning(f"{name}{file_extension} will not be included in compilation")
                 continue
             if fullpath[0:3] == "." + splitter + ".":
                 continue
@@ -120,6 +137,7 @@ def print_progress_bar(progress, width=40):
     filled = int(width * progress)
     bar = '#' * filled + '-' * (width - filled)
     percent = int(progress * 100)
+    # 進度條使用預設顏色
     sys.stdout.write(f"\r[3] Compiling LaTeX : [{bar}] {percent}%")
     sys.stdout.flush()
 
@@ -162,22 +180,22 @@ def GenerateCodebook(FileList, first_run):
         print() # New line after the progress bar
 
 if __name__ == "__main__":
-    print("[#] Start Processing Code Book List...")
-    print("[1] Get Codes...")
+    normal_print("[#] Start Processing Code Book List...")
+    normal_print("[1] Get Codes...")
 
     FileDict = PrepareFileDict("./codes")
     
     total_files = 0
     for key in FileDict.keys():
         total_files += len(FileDict[key])
-    print("    There are", len(FileDict), "folder"+ "(s)" * min(len(FileDict) - 1, 1) + " and", total_files, "file"+ "(s)" * min(total_files - 1, 1))
-    print("[2] Prepare Codes...")
+    normal_print("    There are " + str(len(FileDict)) + " folder"+ "(s)" * min(len(FileDict) - 1, 1) + " and " + str(total_files) + " file"+ "(s)" * min(total_files - 1, 1))
+    normal_print("[2] Prepare Codes...")
     FileList = list()
     with open("list.tex", "w", encoding="utf-8") as fout:
         texCodeGen(fout, FileDict, FileList)
 
     GenerateCodebook(FileList[:], True)
     GenerateCodebook(FileList[:], False)
-    print("[#] Done!")
+    normal_print("[#] Done!")
     if sys.platform == "win32":
         system("pause")
