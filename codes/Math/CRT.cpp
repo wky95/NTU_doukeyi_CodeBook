@@ -1,56 +1,44 @@
-// ax + by = c
-int extgcd_abc(int a, int b, int c, int &x, int &y) {
-    if (b == 0) {
-        if (c % a) return INF;
-        x = c / a, y = 0;
-        return abs(a);
-    }
-    int x1, y1;
-    int g = extgcd_abc(b, a % b, c, x1, y1);
-    x = y1;
-    y = x1 - a / b * y1;
-    return g;
-}
-// Sorry that I don't know how to merge two functions
-int extgcd(int a, int b, int &x, int &y) {
-    if (b == 0) {
-        x = 1, y = 0;
-        return a;
-    }
-    int ret = extgcd(b, a % b, y, x);
-    y -= a / b * x;
-    return ret;
+// 求出 d = gcd(a,b)，並找出 x, y 使 ax + by = d
+tuple<int, int, int> extgcd(int a, int b){
+    if (!b) return {a, 1, 0};
+    auto [d, x, y] = extgcd(b, a%b);
+    return {d, y, x-a/b*y};
 }
 
-// 有 n 個式子，求解 x ≡ a_i (mod m_i)
-int CRT_m_coprime(int n, vector<int> &a, vector<int> &m) {
-    int p = 1, ans = 0;
-    vector<int> M(n), inv_M(n);
+// CRT maybe need use int128
+int CRT_m_coprime(vector<int> &a, vector<int> &m) {
+    int n = a.size(), p = 1, ans = 0;
+    vector<int> M(n), invM(n);
 
-    for (int i = 0; i < n; i++) p *= m[i];
-    for (int i = 0; i < n; i++) {
-        M[i] = p / m[i];
-		int tmp;
-        extgcd(M[i], m[i], inv_M[i], tmp);
-        ans += a[i] * inv_M[i] * M[i];
+    for (int i=0 ; i<n ; i++) p *= m[i];
+    for (int i=0 ; i<n ; i++){
+        M[i] = p/m[i];
+        auto [d, x, y] = extgcd(M[i], m[i]);
+        invM[i] = x;
+        ans += a[i]*invM[i]*M[i];
         ans %= p;
     }
-    return (ans % p + p) % p;
+    return (ans%p+p)%p;
 }
 
-// 對於方程組的式子兩兩求解
-// 回傳：{是否有解, {a, m}}
-pair<bool, pair<int, int>> CRT_m_NOT_coprime(int a1, int m1, int a2, int m2) {
-    int g = __gcd(m1, m2);
-    if ((a2 - a1) % g != 0) return {0, {-1, -1}};
+// CRT maybe need use int128
+int CRT_m_not_coprime(vector<int> &a, vector<int> &m) {
+    int n = a.size();
 
-    int x, y; extgcd(m1, m2, x, y);
+    for (int i=1 ; i<n ; i++){
+        int g = __gcd(m[0], m[i]);
+        if ((a[i]-a[0])%g!=0) return -1;
 
-    x = (a2 - a1) * x / g; // 兩者不能相反
-    a1 = x * m1 + a1;
-    m1 = m1 * m2 / g;
-    a1 = (a1 % m1 + m1) % m1;
-    return {1, {a1, m1}};
+        auto [d, x, y] = extgcd(m[0], m[i]);
+        x = (a[i]-a[0])*x/g;
+
+        a[0] = x*m[0]+a[0];
+        m[0] = m[0]*m[i]/g;
+        a[0] = (a[0]%m[0]+m[0])%m[0];
+    }
+
+    if (a[0]<0) return a[0]+m[0];
+    return a[0];
 }
 
 // ans = a / b (mod m)
