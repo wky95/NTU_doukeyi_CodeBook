@@ -8,6 +8,57 @@ from subprocess import STDOUT as subprocess_STDOUT
 from hashlib import md5
 import threading
 
+from datetime import datetime
+try:
+    from zoneinfo import ZoneInfo  # Python 3.9+
+except Exception:
+    ZoneInfo = None
+import re
+import os
+
+def update_version_in_setup(setup_path: str, tz: str = "Asia/Taipei") -> None:
+    """將 Codebook-setup.tex 的版本字串覆蓋為今天日期（台北時區）"""
+    if not os.path.exists(setup_path):
+        colored_warning(f"{setup_path} not found; skip version update")
+        return
+
+    # 產生日期（台北時區）
+    if ZoneInfo is not None:
+        today = datetime.now(ZoneInfo(tz)).strftime("%Y-%m-%d")
+    else:
+        # 後備：無 zoneinfo 就用系統本地時間
+        today = datetime.now().strftime("%Y-%m-%d")
+
+    with open(setup_path, "r", encoding="utf-8") as f:
+        text = f.read()
+
+    # 依序嘗試三種常見寫法：\newcommand{\Version}{...}、\def\Version{...}、\Version{...}
+    patterns = [
+        (r'(?m)^(\\newcommand\{\\Version\}\{)[^}]*\}', r'\g<1>' + today + r'}'),
+        (r'(?m)^(\\def\\Version\{)[^}]*\}',            r'\g<1>' + today + r'}'),
+        (r'(?m)^(\\Version\{)[^}]*\}',                r'\g<1>' + today + r'}'),
+    ]
+
+    new_text = text
+    replaced = False
+    for pat, repl in patterns:
+        new_text, n = re.subn(pat, repl, new_text)
+        if n > 0:
+            replaced = True
+
+    # 若找不到任何定義，就在檔案開頭補上一行
+    if not replaced:
+        prepend = f"\\newcommand{{\\Version}}{{{today}}}\n"
+        new_text = prepend + new_text
+        normal_print(f"    Injected \\version{{{today}}} into {setup_path}")
+
+    if new_text != text:
+        with open(setup_path, "w", encoding="utf-8") as f:
+            f.write(new_text)
+        colored_warning(f"Updated version -> {today}")
+    else:
+        normal_print("    Version unchanged (already up to date)")
+
 sys.stdin.reconfigure(encoding="utf-8")
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -181,6 +232,10 @@ def GenerateCodebook(FileList, first_run):
 
 if __name__ == "__main__":
     normal_print("[#] Start Processing Code Book List...")
+
+        # 在編譯前更新 Codebook-setup.tex 的 \version
+    update_version_in_setup("Codebook-setup.tex")
+
     normal_print("[1] Get Codes...")
 
     FileDict = PrepareFileDict("./codes")
