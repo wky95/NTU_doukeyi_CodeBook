@@ -1,13 +1,11 @@
-// 給一個字串 S，定義函數 \pi(i) = k 代表 S[1 ... k] = S[i-k+1 ... i]（最長真前後綴）
+// KMP[i] = s[0...i] 的最長共同前後綴長度，KMP[KMP[i]-1] 可以跳 fail link 
 // e5b7ce
 vector<int> KMP(string &s){
-    int n = s.size();
     vector<int> ret(n);
-    for (int i=1 ; i<n ; i++){
+    for (int i=1 ; i<s.size() ; i++){
         int j = ret[i-1];
-        while (j>0 && s[i]!=s[j]) j = ret[j-1];
-        j += (s[i]==s[j]);
-        ret[i] = j;
+        while (j && s[i]!=s[j]) j = ret[j-1];
+        ret[i] = j + (s[i]==s[j]);
     }
     return ret;
 }
