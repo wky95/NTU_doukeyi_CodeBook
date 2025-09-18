@@ -9,3 +9,4 @@ list.tex
 *.fdb_latexmk
 *.fls
 *.xdv
+.claude/
