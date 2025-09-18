@@ -7,6 +7,7 @@ from subprocess import Popen as subprocess_Popen
 from subprocess import STDOUT as subprocess_STDOUT
 from hashlib import md5
 import threading
+import re
 
 from datetime import datetime
 try:
@@ -86,6 +87,38 @@ def colored_warning(message):
 def normal_print(message):
     """印出普通訊息（使用預設終端顏色）"""
     print(message)
+
+def check_pdf_pages(pdf_path, max_pages=25):
+    """檢查 PDF 頁數，超過指定頁數則顯示警告"""
+    try:
+        result = subprocess_run(
+            ["pdfinfo", pdf_path],
+            stdout=subprocess_PIPE,
+            stderr=subprocess_PIPE,
+            text=True
+        )
+
+        if result.returncode != 0:
+            colored_warning(f"Unable to read PDF file: {pdf_path}")
+            return
+
+        # 從 pdfinfo 輸出中提取頁數
+        for line in result.stdout.split('\n'):
+            if line.strip().startswith('Pages:'):
+                pages_match = re.search(r'Pages:\s*(\d+)', line)
+                if pages_match:
+                    pages = int(pages_match.group(1))
+                    normal_print(f"    PDF page count: {pages}")
+                    if pages > max_pages:
+                        colored_warning(f"PDF page count ({pages}) exceeds {max_pages} page limit!")
+                    return pages
+
+        colored_warning("Unable to get page count information from PDF")
+
+    except FileNotFoundError:
+        colored_warning("pdfinfo tool not found, unable to check PDF page count")
+    except Exception as e:
+        colored_warning(f"Error occurred while checking PDF page count: {str(e)}")
 
 
 def toLatex(string):
@@ -252,5 +285,10 @@ if __name__ == "__main__":
     GenerateCodebook(FileList[:], True)
     GenerateCodebook(FileList[:], False)
     normal_print("[#] Done!")
+
+    # 檢查生成的 PDF 頁數
+    normal_print("[4] Checking PDF page count...")
+    check_pdf_pages("Codebook.pdf", 25)
+
     if sys.platform == "win32":
         system("pause")
