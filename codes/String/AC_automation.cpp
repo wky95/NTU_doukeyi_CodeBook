@@ -1,9 +1,9 @@
 struct ACAutomation{
     vector<vector<int>> go;
-    vector<int> fail;
-    int sz = 0;
+    vector<int> fail, match, pos;
+    int sz = 0; // 有效節點為 [0, sz]，開陣列的時候要小心！！！
 
-    ACAutomation(int n) : go(n, vector<int>(26)), fail(n) {}
+    ACAutomation(int n) : go(n, vector<int>(26)), fail(n), match(n) {}
 
     void add(string s){
         int now = 0;
@@ -11,6 +11,7 @@ struct ACAutomation{
             if (!go[now][c-'a']) go[now][c-'a'] = ++sz;
             now = go[now][c-'a'];
         }
+        pos.push_back(now);
     }
 
     void build(){
@@ -30,6 +31,21 @@ struct ACAutomation{
         }
     }
 
-    int solve(string s){
+    // counting pattern
+    void buildMatch(string &s){
+        int now = 0;
+        for (char c : s){
+            now = go[now][c-'a'];
+            match[now]++;
+        }
+
+        vector<int> in(sz+1), que;
+        for (int i=1 ; i<=sz ; i++) in[fail[i]]++;
+        for (int i=1 ; i<=sz ; i++) if (in[i]==0) que.push_back(i);
+        for (int i=0 ; i<que.size() ; i++){
+            int now = que[i];
+            match[fail[now]] += match[now];
+            if (--in[fail[now]]==0) que.push_back(fail[now]);
+        }
     }
 };
