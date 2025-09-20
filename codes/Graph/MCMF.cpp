@@ -13,7 +13,7 @@ struct Flow {
 		G[u].push_back({v, 0, -k, G[v].size()-1});
 	}
  
-	// 3701d6
+	// 6d1140
 	int spfa(int s, int t){
 		fill(par.begin(), par.end(), -1);
 		vector<int> dis(par.size(), INF);
@@ -43,7 +43,7 @@ struct Flow {
 		return dis[t];
 	}
  
- 	// return <max flow, min cost>, 150093
+ 	// return <max flow, min cost>, d7e7ad
 	pair<int, int> flow(int s, int t){
 		int fl = 0, cost = 0, d;
 		while ((d = spfa(s, t))<INF){
