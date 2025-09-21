@@ -59,17 +59,4 @@ struct Flow {
 		}
 		return {fl, cost};
 	}
- 
-	vector<pair<int, int>> construct(){
-		vector<pair<int, int>> ret;
-		for (int i=0 ; i<n ; i++){
-			for (auto x : G[i]){
-				if (x.rc==0){
-					ret.push_back({i+1, x.u-n+1});
-					break;
-				}
-			}
-		}
-		return ret;
-	}
 };
