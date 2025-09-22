@@ -1,15 +1,10 @@
-/*
-全部都是 0-based
-
-宣告
-Persistent_Segment_Tree st(n+q);
-st.build(v, 0);
-
-函式：
-update_version(pos, val, ver)：對版本 ver 的 pos 位置改成 val
-query_version(ql, qr, ver)：對版本 ver 查詢 [ql, qr) 的區間和
-clone_version(ver)：複製版本 ver 到最新的版本
-*/
+// 全部都是 0-based
+// Persistent_Segment_Tree st(n+q);
+// st.build(v, 0);
+// 函式：
+// update_version(pos, val, ver)：對版本 ver 的 pos 位置改成 val
+// query_version(ql, qr, ver)：對版本 ver 查詢 [ql, qr) 的區間和
+// clone_version(ver)：複製版本 ver 到最新的版本
 struct Persistent_Segment_Tree{
     int node_cnt = 0;
     struct Node{

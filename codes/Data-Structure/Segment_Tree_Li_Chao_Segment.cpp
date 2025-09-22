@@ -1,13 +1,8 @@
-/*
-全部都是 0-based
-
-宣告
-LC_Segment_Tree st(n);
-
-函式：
-update_segment({a, b}, ql, qr)：在 [ql, qr) 插入一條 y=ax+b 的線段
-query(x)：查詢所有直線在位置 x 的最小值
-*/
+// 全部都是 0-based
+// 宣告：LC_Segment_Tree st(n);
+// 函式：
+// update_segment({a, b}, ql, qr)：在 [ql, qr) 插入一條 y=ax+b 的線段
+// query(x)：查詢所有直線在位置 x 的最小值
 const int MAX_V = 1e6+10; // 值域最大值
 
 struct LC_Segment_Tree{

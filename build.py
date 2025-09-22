@@ -8,6 +8,8 @@ from subprocess import STDOUT as subprocess_STDOUT
 from hashlib import md5
 import threading
 import re
+import tempfile
+import atexit
 
 from datetime import datetime
 try:
@@ -16,6 +18,21 @@ except Exception:
     ZoneInfo = None
 import re
 import os
+
+# 用於存儲需要清理的臨時文件
+temp_files_to_cleanup = []
+
+def cleanup_temp_files():
+    """清理所有臨時文件"""
+    for temp_file in temp_files_to_cleanup:
+        try:
+            if os.path.exists(temp_file):
+                os.remove(temp_file)
+        except Exception:
+            pass
+
+# 註冊清理函數
+atexit.register(cleanup_temp_files)
 
 def update_version_in_setup(setup_path: str, tz: str = "Asia/Taipei") -> None:
     """將 Codebook-setup.tex 的版本字串覆蓋為今天日期（台北時區）"""
@@ -131,13 +148,70 @@ def replace(string):
     string = string.replace("\\", "/")
     return string
 
+def remove_long_comment_from_start(file_path):
+    """移除文件開頭的長註解，返回處理後的內容和是否有長註解"""
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        # 檢查是否以 /* 開頭
+        if content.strip().startswith("/*"):
+            # 找到第一個 */ 的位置
+            end_pos = content.find("*/")
+            if end_pos != -1:
+                # 移除從開頭到 */ 的內容（包括 */）
+                remaining_content = content[end_pos + 2:]
+                return remaining_content, True
+            else:
+                # 如果沒有找到結束標記，返回原內容
+                return content, True
+        else:
+            return content, False
+    except Exception:
+        return None, False
+
+def has_long_comment_at_start(file_path):
+    """檢查文件開頭是否有長註解 (/**/)"""
+    _, has_comment = remove_long_comment_from_start(file_path)
+    return has_comment
+
 def get_hash(file_path):
-    cpp_process = subprocess_run(
-        ["cpp", "-dD", "-P", "-fpreprocessed", file_path],
-        stdout=subprocess_PIPE,
-        stderr=subprocess_PIPE,
-        text=True
-    )
+    # 檢查是否有開頭長註解
+    processed_content, has_comment = remove_long_comment_from_start(file_path)
+
+    if has_comment:
+        colored_warning(f"File {file_path} contains long comment at start, removing comment for compilation")
+
+        # 創建臨時文件
+        temp_fd, temp_path = tempfile.mkstemp(suffix='.cpp', text=True)
+        temp_files_to_cleanup.append(temp_path)
+
+        try:
+            with os.fdopen(temp_fd, 'w', encoding='utf-8') as temp_file:
+                temp_file.write(processed_content)
+
+            # 使用臨時文件計算 hash
+            cpp_process = subprocess_run(
+                ["cpp", "-dD", "-P", "-fpreprocessed", temp_path],
+                stdout=subprocess_PIPE,
+                stderr=subprocess_PIPE,
+                text=True
+            )
+        except Exception as e:
+            # 確保文件描述符被關閉
+            try:
+                os.close(temp_fd)
+            except:
+                pass
+            raise e
+    else:
+        # 沒有長註解，直接處理原文件
+        cpp_process = subprocess_run(
+            ["cpp", "-dD", "-P", "-fpreprocessed", file_path],
+            stdout=subprocess_PIPE,
+            stderr=subprocess_PIPE,
+            text=True
+        )
 
     if cpp_process.returncode != 0:
         raise RuntimeError(f"cpp failed: {cpp_process.stderr}")
@@ -188,19 +262,53 @@ def texCodeGen(out, FileDict, FileList):
     for key in sorted(FileDict.keys(), key=cmp):
         out.write("\\section{" + key + "}\n")
         for file_extension, name, path in sorted(FileDict[key], key=cmp2):
-            FileList.append(path)
-            hash_value = get_hash(path) if file_extension == ".cpp" else ""
-            if file_extension == ".cpp" and hash_value:
-                out.write(
-                    "  \\includecppwithhash{"
-                    + name
-                    + "}{"
-                    + path
-                    + "}{"
-                    + hash_value
-                    + "}\n"
-                )
+            # 對於 C++ 文件，如果有長註解需要特殊處理
+            if file_extension == ".cpp":
+                processed_content, has_comment = remove_long_comment_from_start(path)
+
+                if has_comment:
+                    # 創建臨時文件用於 LaTeX 包含
+                    temp_fd, temp_path = tempfile.mkstemp(suffix='.cpp', text=True)
+                    temp_files_to_cleanup.append(temp_path)
+
+                    try:
+                        with os.fdopen(temp_fd, 'w', encoding='utf-8') as temp_file:
+                            temp_file.write(processed_content)
+
+                        # 使用臨時文件路徑
+                        actual_path = temp_path
+                        FileList.append(actual_path)
+                    except Exception as e:
+                        try:
+                            os.close(temp_fd)
+                        except:
+                            pass
+                        raise e
+                else:
+                    actual_path = path
+                    FileList.append(actual_path)
+
+                hash_value = get_hash(path)
+                if hash_value:
+                    out.write(
+                        "  \\includecppwithhash{"
+                        + name
+                        + "}{"
+                        + actual_path
+                        + "}{"
+                        + hash_value
+                        + "}\n"
+                    )
+                else:
+                    out.write(
+                        "  \\includecpp{"
+                        + name
+                        + "}{"
+                        + actual_path
+                        + "}\n"
+                    )
             else:
+                FileList.append(path)
                 out.write(
                     "  \\"
                     + RequireOptionDict[file_extension]

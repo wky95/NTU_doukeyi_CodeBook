@@ -1,15 +1,9 @@
-/* c7d5aa
-給定一個有向圖，迴回傳縮點後的圖、SCC 的資訊
-所有點都以 based-0 編號
-
-函式：
-SCC_compress G(n): 宣告一個有 n 個點的圖
-.add_edge(u, v): 加上一條邊 u -> v
-.compress: O(n log n) 計算 G3、SCC、SCC_id 的資訊，並把縮點後的結果存在 result 裡
-
-SCC[i] = 某個 SCC 中的所有點
-SCC_id[i] = 第 i 個點在第幾個 SCC
-*/
+// 給定一個有向圖，迴回傳縮點後的圖、SCC 的資訊
+// 所有點都以 based-0 編號
+// 函式：
+// .compress: O(n log n) 計算 G3、SCC、SCC_id 的資訊，並把縮點後的結果存在 result 裡
+// SCC[i] = 某個 SCC 中的所有點
+// SCC_id[i] = 第 i 個點在第幾個 SCC
 struct SCC_compress{
     int N, M, sz;
     vector<vector<int>> G, inv_G, result;

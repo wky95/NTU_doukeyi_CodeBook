@@ -1,9 +1,6 @@
-/*
-.find_by_order(k) 回傳第 k 小的值（based-0）
-.order_of_key(k) 回傳有多少元素比 k 小
-不能在 #define int long long 後 #include 檔案
-*/
-
+// .find_by_order(k) 回傳第 k 小的值（based-0）
+// .order_of_key(k) 回傳有多少元素比 k 小
+// 不能在 #define int long long 後 #include 檔案
 #include <ext/pb_ds/assoc_container.hpp>
 #include <ext/pb_ds/tree_policy.hpp>
 using namespace __gnu_pbds;

@@ -1,9 +1,6 @@
-/*
-修改 const int MOD = 998244353 更改要取餘的數字
-PolyMul(a, b) 回傳多項式乘法的結果（c_k = \sum_{i+j} a_i+b_j mod MOD）
-
-大約可以支援 5e5，a_i, b_i 皆在 MOD 以下的非負整數
-*/
+// 修改 const int MOD = 998244353 更改要取餘的數字
+// PolyMul(a, b) 回傳多項式乘法的結果（c_k = \sum_{i+j} a_i+b_j mod MOD）
+// 大約可以支援 5e5，a_i, b_i 皆在 MOD 以下的非負整數
 const int MOD = 998244353;
 typedef complex<double> cd;
 
