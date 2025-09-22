@@ -276,7 +276,7 @@ def texCodeGen(out, FileDict, FileList):
                             temp_file.write(processed_content)
 
                         # 使用臨時文件路徑
-                        actual_path = temp_path
+                        actual_path = replace(temp_path)
                         FileList.append(actual_path)
                     except Exception as e:
                         try:
