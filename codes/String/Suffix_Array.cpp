@@ -49,6 +49,13 @@ struct SuffixArray {
     }
 
     // 用之前記得 init
+    // 查詢「sa 上的位置」的 x 跟 y 的 lcp
+    int get_lcp(int x, int y){
+        if (x==y) return s.size()-x;
+        if (x>y) swap(x, y);
+        return st.query(x, y);
+    }
+
     // 回傳 [l1, r1] 跟 [l2, r2] 的 lcp，0-based
     int get_lcp(int l1, int r1, int l2, int r2){
         int pos_1 = pos[l1], len_1 = r1-l1+1;
