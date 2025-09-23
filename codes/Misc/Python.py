@@ -28,6 +28,11 @@ def write_dot(x, y, text, diff=1): # diff = 文字的偏移
 # usage
 draw_line(*a[i], *(a[i-1]))
 write_dot(*a[i], str(a[i]))
+# 以自己左方 100 單位為圓心向前畫一個 90 度的弧 / 正五邊形（參數可以是負的）
+circle(100, extent = 90) 
+circle(100, steps = 5)
+left(90) # 左轉 90 度
+fd(-100) # 倒退 100 單位
 
 # OOP
 class Point:
