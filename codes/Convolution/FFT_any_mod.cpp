@@ -5,7 +5,7 @@ Tested 10^9+7:    https://judge.yosupo.jp/submission/316324
 const int MOD = 998244353;
 typedef complex<double> cd;
 
-// b9c90a
+// bb6d94
 void FFT(vector<cd> &a) {
     int n = a.size(), L = 31-__builtin_clz(n);
     vector<complex<long double>> R(2, 1);
@@ -35,7 +35,7 @@ void FFT(vector<cd> &a) {
     }
 }
 
-// d3c65e
+// c3dcf6
 vector<int> PolyMul(vector<int> a, vector<int> b){
     if (a.empty() || b.empty()) return {};
     vector<int> res(a.size()+b.size()-1);

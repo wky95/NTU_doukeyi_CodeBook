@@ -1,6 +1,6 @@
 typedef complex<double> cd;
 
-// b9c90a
+// 778272
 void FFT(vector<cd> &a) {
     int n = a.size(), L = 31-__builtin_clz(n);
     vector<complex<long double>> R(2, 1);
@@ -27,7 +27,7 @@ void FFT(vector<cd> &a) {
     }
 }
 
-// 39029d
+// 192528
 vector<double> PolyMul(const vector<double> a, const vector<double> b){
     if (a.empty() || b.empty()) return {};
     vector<double> res(a.size()+b.size()-1);
