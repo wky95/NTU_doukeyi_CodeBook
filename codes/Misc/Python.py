@@ -34,6 +34,11 @@ circle(100, steps = 5)
 left(90) # 左轉 90 度
 fd(-100) # 倒退 100 單位
 
+tracer(0, 0) # IO 優化，必須在程式碼最後手動 update()
+pos() # 回傳目前座標
+heading() # 回傳目前方向： 0 是右方、90 是上方
+color("red") # 改變顏色，可以用文字或是 #000000 的格式
+
 # OOP
 class Point:
     def __init__(self, x, y):
