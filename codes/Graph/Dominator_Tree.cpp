@@ -1,10 +1,8 @@
-/*
-全部都是 0-based
-G 要是有向無權圖
-一開始要初始化 G(N, root)，代表有 N 個節點，根是 root
-用完之後要 build
-G[i] = i 的 idom，也就是從 root 走到 i 時，一定要走到的點且離 i 最近
-*/
+// 全部都是 0-based
+// G 要是有向無權圖
+// 一開始要初始化 G(N, root)
+// 用完之後要 build
+// G[i] = 從 root 走到 i 時，一定要走到的點且離 i 最近
 struct DominatorTree{
     int N;
     vector<vector<int>> G;

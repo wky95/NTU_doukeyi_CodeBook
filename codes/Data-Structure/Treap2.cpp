@@ -2,20 +2,28 @@
 int root = 0;
 int lc[MAX_N], rc[MAX_N];
 int pri[MAX_N], val[MAX_N];
-int sz[MAX_N], tag[MAX_N], fa[MAX_N];
-int new_node(int v){
-    static int nodeCnt = 0;
+int sz[MAX_N], tag[MAX_N], fa[MAX_N], total[MAX_N];
+// tag 為不包含自己（僅要給子樹）的資訊
+int nodeCnt = 0;
+int& new_node(int v){
     nodeCnt++;
     val[nodeCnt] = v;
+    total[nodeCnt] = v;
     sz[nodeCnt] = 1;
     pri[nodeCnt] = rand();
     return nodeCnt;
 }
 
+void apply(int x, int V){
+    val[x] += V;
+    tag[x] += V;
+    total[x] += V*sz[x];
+}
+
 void push(int x){
     if (tag[x]){
-        if (lc[x]) tag[lc[x]] ^= 1;
-        if (rc[x]) tag[rc[x]] ^= 1;
+        if (lc[x]) apply(lc[x], tag[x]);
+        if (rc[x]) apply(rc[x], tag[x]);
     }
     tag[x] = 0;
 }
@@ -23,6 +31,7 @@ int pull(int x){
     if (x){
         fa[x] = 0;
         sz[x] = 1+sz[lc[x]]+sz[rc[x]];
+        total[x] = val[x]+total[lc[x]]+total[rc[x]];
         if (lc[x]) fa[lc[x]] = x;
         if (rc[x]) fa[rc[x]] = x;
     }

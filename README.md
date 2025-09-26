@@ -1,13 +1,13 @@
-# NTHU_No-brainers_CodeBook
+# NTHU_BlueCapeFlyingCat_CodeBook
 
 ## 下載 Codebook
 ```sh
-git clone https://github.com/temmie-950807/NTHU_No-brainers_CodeBook.git
+git clone https://github.com/temmie-950807/NTHU_BlueCapeFlyingCat_CodeBook.git
 ```
 
 ## 編譯 Codebook
 ```sh
-cd NTHU_No-brainers_CodeBook
+cd NTHU_BlueCapeFlyingCat_CodeBook
 python3 build.py
 ```
 

@@ -1,3 +1,4 @@
+\newcommand{\Version}{2025-09-25}
 % **************************************************
 % Packages
 % **************************************************
@@ -23,12 +24,28 @@
 % **************************************************
 % Information and Commands for Reuse
 % **************************************************
+% 將 section / subsection 標題字體設為 \small，保留編號
+\titleformat{\section}
+  {\small\bfseries}      % 格式：小一號、粗體
+  {\thesection}          % 標號（一定要保留這個，編號才會顯示）
+  {0.8em}                % 標號與標題文字間距
+  {}
+
+\titleformat{\subsection}
+  {\small\bfseries}
+  {\thesubsection}
+  {0.8em}
+  {}
+
+%（可選）順便微調上下間距，避免字體變小後留白顯得太大
+\titlespacing*{\section}{0pt}{1ex plus .2ex}{0.6ex}
+\titlespacing*{\subsection}{0pt}{0.8ex plus .2ex}{0.5ex}
+
 \newboolean{UsingGeometryLandscape}
 \setboolean{UsingGeometryLandscape}{true} % 是否使用橫版頁面
 \newcommand{\NumberOfColumn}{3} % 每頁有幾欄
 \newcommand{\UniversityName}{National Tsing Hua University} % 學校名稱
-\newcommand{\TeamName}{No-brainers} % 隊名
-\newcommand{\Version}{3.1.1} % 版本號
+\newcommand{\TeamName}{BlueCapeFlyingCat} % 隊名
 
 \newcommand{\includecppwithhash}[3]{ % 支援 C++ (.cpp) 帶有 hash 值
   \subsection[#1]{#1 [#3]}

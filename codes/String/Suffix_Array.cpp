@@ -4,6 +4,7 @@ struct SuffixArray {
     vector<int> sa, lcp;
 
     // 69ced9
+    // lim 要調整成字元集大小，_s 不可以有 0
     SuffixArray(string _s, int lim = 256) {
         s = _s;
         int n = s.size()+1, k = 0, a, b;
@@ -48,6 +49,13 @@ struct SuffixArray {
     }
 
     // 用之前記得 init
+    // 查詢「sa 上的位置」的 x 跟 y 的 lcp
+    int get_lcp(int x, int y){
+        if (x==y) return s.size()-x;
+        if (x>y) swap(x, y);
+        return st.query(x, y);
+    }
+
     // 回傳 [l1, r1] 跟 [l2, r2] 的 lcp，0-based
     int get_lcp(int l1, int r1, int l2, int r2){
         int pos_1 = pos[l1], len_1 = r1-l1+1;
@@ -75,8 +83,7 @@ struct SuffixArray {
         if (res<len_1 && res<len_2){
             return s[l1+res]-s[l2+res];
         }else if (len_1==res && len_2==res){
-            // 如果不需要以 index 作為次要排序參數，這裡要回傳 0
-            return l1-l2;
+            return 0;
         }else{
             return len_1==res ? -1 : 1;
         }

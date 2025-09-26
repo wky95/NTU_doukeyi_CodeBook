@@ -1,22 +1,11 @@
-// 定義一個長度為 n 的文本為 T ，則陣列 Z 的 Z[i] 代表 T[0:n] 和 T[i:n] 最長共同前綴
-// bcfbd6
+// z[i] 回傳 s[0...] 跟 s[i...] 的 lcp, z[0] = 0
 vector<int> z_function(string s){
-    vector<int> ret(s.size());
-    int ll = 0, rr = 0;
-
+    vector<int> z(s.size());
+    int l = -1, r = -1;
     for (int i=1 ; i<s.size() ; i++){
-        int j = 0;
-
-        if (i<rr) j = min(ret[i-ll], rr-i);
-        while (s[j]==s[i+j]) j++;
-        ret[i] = j;
-
-        if (i+j>rr){
-            ll = i;
-            rr = i+j;
-        }
+        z[i] = i>=r ? 0 : min(r-i, z[i-l]);
+        while (i+z[i]<s.size() && s[i+z[i]]==s[z[i]]) z[i]++;
+        if (i+z[i]>r) l=i, r=i+z[i];
     }
-
-    ret[0] = s.size();
-    return ret;
+    return z;
 }
