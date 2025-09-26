@@ -1,22 +1,19 @@
 #include <bits/stdc++.h>
+#define F first
+#define S second
+#define pb push_back
+#define all(x) begin(x), end(x)
+#define FOR(i,a,b) for (int i = (a); i <= (b); i++)
+#define HEHE ios_base::sync_with_stdio(0), cin.tie(0);
 using namespace std;
-#define int long long
+
 #define debug(a...) cerr << #a << " = ", dout(a)
 void dout() { cerr << "\n"; }
-template <typename A, typename... B>
-void dout(A a, B... b) { cerr << a << ' ', dout(b...); }
+template <class T, class... U>
+void dout(T t, U... u) { cerr << t << ' ', dout(u...); }
 
-void solve(){
+#define int long long
 
-}
-
-signed main(){
-    ios::sync_with_stdio(0), cin.tie(0);
-
-    int t = 1;
-    while (t--){
-        solve();
-    }
-
-    return 0;
+signed main() {
+    HEHE
 }
