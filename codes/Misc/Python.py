@@ -33,6 +33,8 @@ circle(100, extent = 90)
 circle(100, steps = 5)
 left(90) # 左轉 90 度
 fd(-100) # 倒退 100 單位
+penup()
+pendown()
 
 tracer(0, 0) # IO 優化，必須在程式碼最後手動 update()
 pos() # 回傳目前座標
