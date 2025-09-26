@@ -2,12 +2,12 @@
 
 ## 下載 Codebook
 ```sh
-git clone https://github.com/temmie-950807/NTHU_BlueCapeFlyingCat_CodeBook.git
+git clone https://github.com/wky95/NTU_doukeyi_CodeBook.git
 ```
 
 ## 編譯 Codebook
 ```sh
-cd NTHU_BlueCapeFlyingCat_CodeBook
+cd NTU_doukeyi_CodeBook
 python3 build.py
 ```
 
